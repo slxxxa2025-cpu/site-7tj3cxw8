@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0F1B4D">
+<title>صور وكلمات</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0F1B4D;color:#fff;font-family:'Segoe UI',Tahoma,Arial,sans-serif;min-height:100vh;direction:rtl;overflow-x:hidden;user-select:none}
+.screen{display:none;min-height:100vh;padding:16px;padding-bottom:30px}
+.screen.active{display:flex;flex-direction:column}
+/* HOME */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.icon-btn{background:#1E2F6F;border:none;border-radius:12px;padding:10px 14px;color:#fff;font-size:20px;cursor:pointer}
+.coins-box{background:#1E2F6F;border-radius:20px;padding:8px 16px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:16px;color:#FFD700}
+.title-box{text-align:center;margin:16px 0}
+.title-box h1{font-size:36px;font-weight:900;letter-spacing:1px}
+.title-box p{color:#8BA3D4;margin-top:6px;font-size:16px}
+.stats-row{display:flex;gap:10px;margin-bottom:16px}
+.stat-card{flex:1;background:#1E2F6F;border-radius:16px;padding:14px;text-align:center}
+.stat-icon{font-size:24px;display:block;margin-bottom:4px}
+.stat-val{font-size:20px;font-weight:800;color:#FFD700;display:block}
+.stat-lbl{font-size:11px;color:#8BA3D4;margin-top:2px}
+.progress-box{background:#1E2F6F;border-radius:16px;padding:16px;margin-bottom:16px}
+.progress-hdr{display:flex;justify-content:space-between;margin-bottom:8px}
+.progress-hdr span{font-weight:700;font-size:14px}
+.progress-pct{color:#FFD700!important}
+.progress-bg{height:10px;background:#0F1B4D;border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#4CAF50,#8BC34A);border-radius:5px;transition:width 0.5s}
+.progress-sub{color:#8BA3D4;font-size:12px;margin-top:8px;text-align:center}
+.play-btn{background:linear-gradient(135deg,#FFD700,#FFA000);border:none;border-radius:20px;padding:20px;width:100%;color:#0F1B4D;font-size:22px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(255,215,0,0.35);margin-bottom:12px;transition:transform 0.1s}
+.play-btn:active{transform:scale(0.97)}
+.play-btn small{display:block;font-size:13px;font-weight:600;margin-top:4px;opacity:0.7}
+.map-btn{background:#1E2F6F;border:1px solid #2E4080;border-radius:16px;padding:16px;width:100%;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:20px}
+.cats{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.cat-chip{background:#1E2F6F;border:1px solid #2E4080;border-radius:20px;padding:6px 12px;font-size:12px;color:#8BA3D4}
+/* LEVEL MAP */
+.chapter-tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:4px}
+.chapter-tab{flex-shrink:0;background:#1E2F6F;border:none;border-radius:14px;padding:10px 14px;color:#8BA3D4;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all 0.2s}
+.chapter-tab.active{background:#FFD700;color:#0F1B4D}
+.ch-label{color:#8BA3D4;font-size:12px;text-align:center;margin-bottom:6px}
+.ch-prog-bg{height:4px;background:#1E2F6F;border-radius:4px;margin-bottom:12px;overflow:hidden}
+.ch-prog-fill{height:100%;background:#FFD700;border-radius:4px;transition:width 0.5s}
+.levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvl-cell{aspect-ratio:1;border-radius:12px;border:2px solid #2E4080;background:#1E2F6F;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:700;color:#fff;position:relative;transition:transform 0.1s}
+.lvl-cell:active{transform:scale(0.95)}
+.lvl-cell.done{background:#1a3a2a;border-color:#4CAF50;color:#4CAF50}
+.lvl-cell.current{border-color:#FFD700;border-width:3px}
+.lvl-cell.locked{opacity:0.4;cursor:not-allowed}
+.lvl-cell .dot{position:absolute;bottom:3px;width:5px;height:5px;border-radius:50%;background:#FFD700}
+/* GAME SCREEN */
+.game-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.back-btn{background:#1E2F6F;border:none;border-radius:12px;padding:8px 14px;color:#fff;font-size:18px;cursor:pointer}
+.level-info{text-align:center}
+.level-num{font-weight:800;font-size:16px}
+.diff-badge{border-radius:10px;padding:2px 10px;font-size:11px;font-weight:700;display:inline-block;margin-top:3px}
+.game-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.hint-btn{background:#1E2F6F;border:none;border-radius:12px;padding:8px 12px;font-size:20px;cursor:pointer}
+.coins-sm{background:#1E2F6F;border-radius:12px;padding:4px 10px;font-size:13px;font-weight:800;color:#FFD700}
+.lives-row{display:flex;justify-content:center;gap:4px;margin:4px 0;font-size:18px}
+.question{color:#8BA3D4;text-align:center;font-size:13px;margin:4px 0;font-weight:600}
+.emoji-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.emoji-card{background:#fff;border-radius:18px;display:flex;align-items:center;justify-content:center;aspect-ratio:1.3;box-shadow:0 4px 15px rgba(0,0,0,0.2);font-size:58px}
+.answer-row{display:flex;justify-content:center;gap:6px;margin:8px 0;flex-wrap:wrap}
+.ans-box{width:46px;height:52px;border-radius:10px;background:#1E2F6F;border:2px solid #2E4080;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;transition:all 0.2s}
+.ans-box.filled{border-color:#FFD700;background:#2a3a6e}
+.ans-box.revealed{border-color:#4CAF50;background:#1a3a2a}
+.hint-text{text-align:center;color:#8BA3D4;font-size:12px;margin:4px 0 8px}
+.keyboard{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.key-row{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}
+.key-tile{width:48px;height:52px;background:#fff;border-radius:10px;border:none;font-size:18px;font-weight:700;color:#0F1B4D;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,0.2);transition:transform 0.1s,opacity 0.2s;display:flex;align-items:center;justify-content:center}
+.key-tile:active{transform:scale(0.92)}
+.key-tile.used{opacity:0.3;background:#1E2F6F;color:#555}
+.key-tile.wrong-letter{background:#3a1a1a;color:#555}
+.backspace-tile{width:54px;height:52px;background:#F44336;border-radius:10px;border:none;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.backspace-tile:active{transform:scale(0.92)}
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:flex-end;justify-content:center;z-index:100}
+.modal-overlay.center{align-items:center;padding:20px}
+.hint-menu{background:#1E2F6F;border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:480px}
+.hint-menu h3{color:#FFD700;font-size:20px;font-weight:800;text-align:center;margin-bottom:16px}
+.hint-option{display:flex;align-items:center;background:#0F1B4D;border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;gap:12px;border:none;width:100%;text-align:right}
+.hint-option:active{opacity:0.8}
+.hint-opt-icon{font-size:26px}
+.hint-opt-label{flex:1;color:#fff;font-size:15px;font-weight:700}
+.hint-cost{background:#FFD700;color:#0F1B4D;border-radius:10px;padding:4px 10px;font-weight:800;font-size:13px}
+.cancel-btn{background:#2E4080;border:none;border-radius:12px;padding:14px;width:100%;color:#8BA3D4;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.win-card,.fail-card{background:#1E2F6F;border-radius:28px;padding:32px;width:100%;max-width:400px;text-align:center}
+.win-card{animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes popIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.shake{animation:shake 0.5s ease}
+.win-emoji,.fail-emoji{font-size:64px;display:block;margin-bottom:12px}
+.win-title{color:#FFD700;font-size:32px;font-weight:900;margin-bottom:8px}
+.fail-title{color:#F44336;font-size:28px;font-weight:900;margin-bottom:8px}
+.win-word{color:#fff;font-size:28px;font-weight:800;letter-spacing:4px;margin-bottom:8px}
+.win-coins{color:#FFD700;font-size:18px;font-weight:700;margin-bottom:12px}
+.stars-row{display:flex;justify-content:center;gap:8px;font-size:32px;margin-bottom:16px}
+.star-empty{opacity:0.25}
+.next-btn{background:linear-gradient(135deg,#FFD700,#FFA000);border:none;border-radius:16px;padding:16px;width:100%;color:#0F1B4D;font-size:18px;font-weight:900;cursor:pointer;margin-bottom:10px}
+.next-btn:active{transform:scale(0.97)}
+.home-link-btn{background:#0F1B4D;border:none;border-radius:14px;padding:12px;width:100%;color:#8BA3D4;font-size:15px;font-weight:700;cursor:pointer}
+.fail-sub{color:#8BA3D4;font-size:14px;margin-bottom:16px}
+/* SETTINGS */
+.section{background:#1E2F6F;border-radius:18px;overflow:hidden;margin-bottom:12px}
+.section-title{color:#FFD700;font-weight:800;font-size:14px;padding:14px 16px;border-bottom:1px solid #2E4080}
+.setting-row{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #2E4080;gap:12px}
+.setting-row:last-child{border-bottom:none}
+.setting-icon{font-size:22px;width:32px}
+.setting-label{flex:1;font-size:15px;font-weight:600}
+.setting-val{color:#FFD700;font-weight:800;font-size:15px}
+.toggle-btn{width:52px;height:28px;border-radius:14px;border:none;cursor:pointer;position:relative;transition:background 0.3s}
+.toggle-btn.on{background:#4CAF50}
+.toggle-btn.off{background:#2E4080}
+.toggle-btn::after{content:'';position:absolute;top:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left 0.3s}
+.toggle-btn.on::after{left:27px}
+.toggle-btn.off::after{left:3px}
+.reset-btn{background:#F44336;border:none;border-radius:14px;padding:16px;width:100%;color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin:16px}
+.footer-text{color:#4a5a8a;text-align:center;margin-top:20px;font-size:12px}
+/* SCROLLABLE */
+.scroll-area{overflow-y:auto;flex:1}
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="home" class="screen active">
+  <div class="top-bar">
+    <button class="icon-btn" onclick="showScreen('settings')">⚙️</button>
+    <div class="coins-box"><span>🪙</span><span id="h-coins">100</span></div>
+  </div>
+  <div class="title-box"><h1>🎮 صور وكلمات</h1><p>اكتشف الكلمة من الصور</p></div>
+  <div class="stats-row">
+    <div class="stat-card"><span class="stat-icon">❤️</span><span class="stat-val" id="h-lives">5/5</span><span class="stat-lbl">حيوات</span></div>
+    <div class="stat-card"><span class="stat-icon">🔥</span><span class="stat-val" id="h-streak">0</span><span class="stat-lbl">يوم متواصل</span></div>
+    <div class="stat-card"><span class="stat-icon">⭐</span><span class="stat-val" id="h-stars">0</span><span class="stat-lbl">نجوم</span></div>
+  </div>
+  <div class="progress-box">
+    <div class="progress-hdr"><span>التقدم العام</span><span class="progress-pct" id="h-pct">0%</span></div>
+    <div class="progress-bg"><div class="progress-fill" id="h-bar" style="width:0%"></div></div>
+    <div class="progress-sub" id="h-sub">0 / 472 مستوى مكتمل</div>
+  </div>
+  <button class="play-btn" onclick="startCurrentLevel()">▶️ العب الآن<small id="h-lvl-lbl">المستوى 1</small></button>
+  <button class="map-btn" onclick="showScreen('levelmap')">🗺️  خريطة المستويات</button>
+  <div style="color:#fff;font-weight:800;font-size:14px;margin-bottom:10px">الفئات المتاحة</div>
+  <div class="cats" id="cats"></div>
+</div>
+
+<!-- LEVEL MAP -->
+<div id="levelmap" class="screen" style="padding:16px">
+  <div class="top-bar" style="margin-bottom:12px">
+    <button class="icon-btn" onclick="showScreen('home')">← الرئيسية</button>
+    <span style="font-weight:800;font-size:18px;color:#FFD700">خريطة المستويات</span>
+    <div></div>
+  </div>
+  <div class="chapter-tabs" id="chapter-tabs"></div>
+  <div class="ch-label" id="ch-label"></div>
+  <div class="ch-prog-bg"><div class="ch-prog-fill" id="ch-prog" style="width:0%"></div></div>
+  <div class="scroll-area"><div class="levels-grid" id="levels-grid"></div></div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game" class="screen">
+  <div class="game-top">
+    <button class="back-btn" onclick="showScreen('home')">←</button>
+    <div class="level-info">
+      <div class="level-num" id="g-level-num">المستوى 1</div>
+      <span class="diff-badge" id="g-diff-badge">حيوانات</span>
+    </div>
+    <div class="game-top-right">
+      <button class="hint-btn" onclick="openHintMenu()">💡</button>
+      <div class="coins-sm" id="g-coins">🪙 100</div>
+    </div>
+  </div>
+  <div class="lives-row" id="g-lives"></div>
+  <div class="question">ما الكلمة المشتركة بين الصور؟</div>
+  <div class="emoji-grid" id="g-emojis"></div>
+  <div class="answer-row" id="g-answer"></div>
+  <div class="hint-text" id="g-hint"></div>
+  <div class="keyboard" id="g-keyboard"></div>
+</div>
+
+<!-- SETTINGS SCREEN -->
+<div id="settings" class="screen">
+  <div class="top-bar" style="margin-bottom:16px">
+    <button class="icon-btn" onclick="showScreen('home')">← رجوع</button>
+    <span style="font-weight:800;font-size:18px;color:#FFD700">الإعدادات</span>
+    <div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">🎮 إعدادات اللعبة</div>
+    <div class="setting-row"><span class="setting-icon">🔊</span><span class="setting-label">الأصوات</span><button class="toggle-btn on" id="sound-toggle" onclick="toggleSetting('sound')"></button></div>
+    <div class="setting-row"><span class="setting-icon">📳</span><span class="setting-label">الاهتزاز</span><button class="toggle-btn on" id="haptic-toggle" onclick="toggleSetting('haptics')"></button></div>
+  </div>
+  <div class="section">
+    <div class="section-title">📊 إحصائياتك</div>
+    <div class="setting-row"><span class="setting-icon">🏆</span><span class="setting-label">المستويات المكتملة</span><span class="setting-val" id="s-completed">0</span></div>
+    <div class="setting-row"><span class="setting-icon">⭐</span><span class="setting-label">إجمالي النجوم</span><span class="setting-val" id="s-stars">0</span></div>
+    <div class="setting-row"><span class="setting-icon">🪙</span><span class="setting-label">العملات</span><span class="setting-val" id="s-coins">100</span></div>
+    <div class="setting-row"><span class="setting-icon">🔥</span><span class="setting-label">أطول سلسلة</span><span class="setting-val" id="s-streak">0</span></div>
+    <div class="setting-row"><span class="setting-icon">💡</span><span class="setting-label">التلميحات المستخدمة</span><span class="setting-val" id="s-hints">0</span></div>
+  </div>
+  <div class="section">
+    <div class="section-title">⚠️ خطر</div>
+    <button class="reset-btn" onclick="resetGame()">🗑️  إعادة تعيين اللعبة</button>
+  </div>
+  <div class="footer-text">صور وكلمات — الإصدار 1.0.0<br>472 مستوى · 5 درجات صعوبة</div>
+</div>
+
+<!-- HINT MENU MODAL -->
+<div id="hint-modal" class="modal-overlay" style="display:none" onclick="closeHintMenu(event)">
+  <div class="hint-menu">
+    <h3>💡 اختر تلميحاً</h3>
+    <button class="hint-option" onclick="useHint('letter')">
+      <span class="hint-opt-icon">🔤</span>
+      <span class="hint-opt-label">اكشف حرفاً</span>
+      <span class="hint-cost">🪙 50</span>
+    </button>
+    <button class="hint-option" onclick="useHint('remove')">
+      <span class="hint-opt-icon">✂️</span>
+      <span class="hint-opt-label">احذف الحروف الخاطئة</span>
+      <span class="hint-cost">🪙 75</span>
+    </button>
+    <button class="hint-option" onclick="useHint('word')">
+      <span class="hint-opt-icon">🎁</span>
+      <span class="hint-opt-label">اكشف الكلمة كاملة</span>
+      <span class="hint-cost">🪙 150</span>
+    </button>
+    <button class="cancel-btn" onclick="closeHintMenu()">إلغاء</button>
+  </div>
+</div>
+
+<!-- WIN MODAL -->
+<div id="win-modal" class="modal-overlay center" style="display:none">
+  <div class="win-card">
+    <span class="win-emoji">🎉</span>
+    <div class="win-title">أحسنت!</div>
+    <div class="win-word" id="win-word"></div>
+    <div class="win-coins" id="win-coins"></div>
+    <div class="stars-row" id="win-stars"></div>
+    <button class="next-btn" onclick="goNextLevel()" id="next-btn-txt">المستوى التالي ←</button>
+    <button class="home-link-btn" onclick="showScreen('home')">الصفحة الرئيسية</button>
+  </div>
+</div>
+
+<!-- FAIL MODAL -->
+<div id="fail-modal" class="modal-overlay center" style="display:none">
+  <div class="fail-card">
+    <span class="fail-emoji">💔</span>
+    <div class="fail-title">نفدت حياتك!</div>
+    <div class="fail-sub">انتظر 30 دقيقة لاستعادة الحياة أو اشترِ المزيد بالعملات</div>
+    <button class="next-btn" onclick="showScreen('home');closeModal('fail-modal')">العودة للرئيسية</button>
+  </div>
+</div>
+
+<script>
+// ===== GAME DATA =====
+const LEVELS = [{"id":1,"word":"قط","emojis":["🐱","😺","🐾","🏠"],"difficulty":1,"category":"حيوانات","hint":"حيوان أليف يموء"},{"id":2,"word":"كلب","emojis":["🐶","🦴","🐾","🏡"],"difficulty":1,"category":"حيوانات","hint":"اوفى الحيوانات الاليفة"},{"id":3,"word":"اسد","emojis":["🦁","🌿","👑","🐾"],"difficulty":1,"category":"حيوانات","hint":"ملك الغابة"},{"id":4,"word":"نمر","emojis":["🐯","🌿","🔥","🐾"],"difficulty":1,"category":"حيوانات","hint":"من اسرع الحيوانات المفترسة"},{"id":5,"word":"فيل","emojis":["🐘","🌿","🏕","🌍"],"difficulty":1,"category":"حيوانات","hint":"اكبر حيوان بري"},{"id":6,"word":"حصان","emojis":["🐴","🏇","🌿","🎠"],"difficulty":1,"category":"حيوانات","hint":"يستخدم في الفروسية"},{"id":7,"word":"بقرة","emojis":["🐄","🥛","🌿","🐮"],"difficulty":1,"category":"حيوانات","hint":"تعطينا الحليب"},{"id":8,"word":"دجاج","emojis":["🐔","🥚","🌿","🍗"],"difficulty":1,"category":"حيوانات","hint":"طائر مالوف في المزارع"},{"id":9,"word":"ارنب","emojis":["🐰","🥕","🌿","🐾"],"difficulty":1,"category":"حيوانات","hint":"يحب الجزر وله اذان طويلة"},{"id":10,"word":"سمكة","emojis":["🐟","🌊","💧","🐠"],"difficulty":1,"category":"حيوانات","hint":"تعيش في الماء وتسبح"},{"id":11,"word":"طائر","emojis":["🐦","🌿","🌸","🌲"],"difficulty":1,"category":"حيوانات","hint":"يطير في السماء ويغرد"},{"id":12,"word":"قرد","emojis":["🐵","🌴","🍌","🌿"],"difficulty":1,"category":"حيوانات","hint":"يحب الموز ويتسلق الاشجار"},{"id":13,"word":"دب","emojis":["🐻","🍯","🌿","🏕"],"difficulty":1,"category":"حيوانات","hint":"يحب العسل ويسكن الغابة"},{"id":14,"word":"ثعلب","emojis":["🦊","🌿","🐾","🌙"],"difficulty":1,"category":"حيوانات","hint":"ذكي وماكر ذو ذيل كثيف"},{"id":15,"word":"ذئب","emojis":["🐺","🌙","🌿","🐾"],"difficulty":1,"category":"حيوانات","hint":"يعيش في القطيع"},{"id":16,"word":"زرافة","emojis":["🦒","🌿","🏕","🌍"],"difficulty":1,"category":"حيوانات","hint":"اطول حيوان على الارض"},{"id":17,"word":"بطة","emojis":["🦆","💧","🌿","🏊"],"difficulty":1,"category":"حيوانات","hint":"طائر يسبح في الماء"},{"id":18,"word":"غنم","emojis":["🐑","🌿","🧶","🌾"],"difficulty":1,"category":"حيوانات","hint":"يعطينا الصوف واللحم"},{"id":19,"word":"جمل","emojis":["🐪","🏜","☀","🌵"],"difficulty":1,"category":"حيوانات","hint":"سفينة الصحراء"},{"id":20,"word":"ضفدع","emojis":["🐸","💧","🌿","🌿"],"difficulty":1,"category":"حيوانات","hint":"ينط ويعيش قرب الماء"},{"id":21,"word":"فراشة","emojis":["🦋","🌸","🌿","🌺"],"difficulty":1,"category":"حيوانات","hint":"حشرة جميلة ذات اجنحة ملونة"},{"id":22,"word":"نحلة","emojis":["🐝","🌸","🍯","🌺"],"difficulty":1,"category":"حيوانات","hint":"تصنع العسل"},{"id":23,"word":"ثعبان","emojis":["🐍","🌿","🌺","🐾"],"difficulty":1,"category":"حيوانات","hint":"زاحف بلا ارجل"},{"id":24,"word":"سلحفاة","emojis":["🐢","💧","🌿","🐾"],"difficulty":1,"category":"حيوانات","hint":"تحمل بيتها على ظهرها"},{"id":25,"word":"تمساح","emojis":["🐊","💧","🌿","🦷"],"difficulty":1,"category":"حيوانات","hint":"زاحف ضخم باسنان حادة"},{"id":26,"word":"دلفين","emojis":["🐬","🌊","💧","🎪"],"difficulty":1,"category":"حيوانات","hint":"ذكي ويقفز فوق الماء"},{"id":27,"word":"حوت","emojis":["🐋","🌊","💧","🌊"],"difficulty":1,"category":"حيوانات","hint":"اضخم كائن حي في العالم"},{"id":28,"word":"قرش","emojis":["🦈","🌊","💧","🐟"],"difficulty":1,"category":"حيوانات","hint":"سمكة ضارية في البحار"},{"id":29,"word":"نسر","emojis":["🦅","⛰","🌿","🌬"],"difficulty":1,"category":"حيوانات","hint":"ملك الطيور يحلق عاليا"},{"id":30,"word":"ببغاء","emojis":["🦜","🌴","🌿","🌺"],"difficulty":1,"category":"حيوانات","hint":"يقلد الاصوات ويتكلم"},{"id":31,"word":"بطريق","emojis":["🐧","❄","🌊","🌨"],"difficulty":1,"category":"حيوانات","hint":"طائر لا يطير يعيش في البرد"},{"id":32,"word":"كنغر","emojis":["🦘","🌿","🌏","🏕"],"difficulty":1,"category":"حيوانات","hint":"يحمل صغيره في جيبه"},{"id":33,"word":"فهد","emojis":["🐆","🌿","🏃","🌍"],"difficulty":1,"category":"حيوانات","hint":"اسرع حيوان على وجه الارض"},{"id":34,"word":"طاووس","emojis":["🦚","🌿","🌺","🌈"],"difficulty":1,"category":"حيوانات","hint":"يفرد ذيله كاجمل مروحة"},{"id":35,"word":"بومة","emojis":["🦉","🌙","🌿","🌳"],"difficulty":1,"category":"حيوانات","hint":"طائر حكيم ينشط ليلا"},{"id":36,"word":"تفاحة","emojis":["🍎","🌳","🍏","🥧"],"difficulty":1,"category":"فواكه","hint":"فاكهة حمراء او خضراء"},{"id":37,"word":"موز","emojis":["🍌","🌴","🌿","🐒"],"difficulty":1,"category":"فواكه","hint":"اصفر اللون ومنحني الشكل"},{"id":38,"word":"برتقال","emojis":["🍊","🌳","🌞","💧"],"difficulty":1,"category":"فواكه","hint":"فاكهة برتقالية عصيرها لذيذ"},{"id":39,"word":"عنب","emojis":["🍇","🌿","🍷","🌾"],"difficulty":1,"category":"فواكه","hint":"حبات صغيرة تنمو في عناقيد"},{"id":40,"word":"فراولة","emojis":["🍓","🌿","🌸","🍰"],"difficulty":1,"category":"فواكه","hint":"فاكهة حمراء صغيرة حلوة"},{"id":41,"word":"بطيخ","emojis":["🍉","🌞","💧","🏖"],"difficulty":1,"category":"فواكه","hint":"فاكهة كبيرة خضراء"},{"id":42,"word":"مانجو","emojis":["🥭","🌴","🌞","🌿"],"difficulty":1,"category":"فواكه","hint":"ملك الفاكهة في المناطق الحارة"},{"id":43,"word":"كرز","emojis":["🍒","🌸","🌳","🍰"],"difficulty":1,"category":"فواكه","hint":"حبات صغيرة حمراء حلوة"},{"id":44,"word":"ليمون","emojis":["🍋","💛","🌿","🥤"],"difficulty":1,"category":"فواكه","hint":"فاكهة صفراء حامضة"},{"id":45,"word":"اناناس","emojis":["🍍","🌴","🌞","🌿"],"difficulty":1,"category":"فواكه","hint":"فاكهة استوائية شوكية"},{"id":46,"word":"يد","emojis":["👋","🖐","✋","🤚"],"difficulty":1,"category":"جسم","hint":"نمسك بها الاشياء"},{"id":47,"word":"رجل","emojis":["🦵","🏃","🦶","👢"],"difficulty":1,"category":"جسم","hint":"نمشي بها"},{"id":48,"word":"عين","emojis":["👁","👀","🌟","🔍"],"difficulty":1,"category":"جسم","hint":"نرى بها العالم"},{"id":49,"word":"اذن","emojis":["👂","🎵","🔊","🎶"],"difficulty":1,"category":"جسم","hint":"نسمع بها الاصوات"},{"id":50,"word":"انف","emojis":["👃","🌸","🌿","💨"],"difficulty":1,"category":"جسم","hint":"نشم به الروائح"},{"id":51,"word":"فم","emojis":["👄","💬","🦷","🍎"],"difficulty":1,"category":"جسم","hint":"ناكل ونتكلم به"},{"id":52,"word":"راس","emojis":["🤔","💭","🧠","👑"],"difficulty":1,"category":"جسم","hint":"اعلى جزء في الجسم"},{"id":53,"word":"قلب","emojis":["❤","💓","🏥","💕"],"difficulty":1,"category":"جسم","hint":"يضخ الدم في الجسم"},{"id":54,"word":"دماغ","emojis":["🧠","💭","🔬","🏥"],"difficulty":1,"category":"جسم","hint":"مركز التفكير في الجسم"},{"id":55,"word":"شعر","emojis":["💇","🌊","🌸","✂"],"difficulty":1,"category":"جسم","hint":"ينمو فوق الراس"},{"id":56,"word":"احمر","emojis":["❤","🌹","🍎","🔴"],"difficulty":1,"category":"الوان","hint":"لون الدم والورود"},{"id":57,"word":"ازرق","emojis":["🌊","💙","🌀","🔵"],"difficulty":1,"category":"الوان","hint":"لون السماء والبحر"},{"id":58,"word":"اخضر","emojis":["🌿","💚","🌱","🍃"],"difficulty":1,"category":"الوان","hint":"لون الاشجار والطبيعة"},{"id":59,"word":"اصفر","emojis":["☀","💛","🌟","🍋"],"difficulty":1,"category":"الوان","hint":"لون الشمس والذهب"},{"id":60,"word":"ابيض","emojis":["☁","🕊","⬜","❄"],"difficulty":1,"category":"الوان","hint":"لون الثلج والنقاء"},{"id":61,"word":"اسود","emojis":["🌑","🖤","🎱","⬛"],"difficulty":1,"category":"الوان","hint":"لون الليل والفحم"},{"id":62,"word":"وردي","emojis":["🌸","💗","🌺","💕"],"difficulty":1,"category":"الوان","hint":"لون الورود الجميل"},{"id":63,"word":"بني","emojis":["🌰","☕","🐻","🍂"],"difficulty":1,"category":"الوان","hint":"لون التراب والخشب"},{"id":64,"word":"رمادي","emojis":["☁","🐘","🌫","⬜"],"difficulty":1,"category":"الوان","hint":"لون بين الابيض والاسود"},{"id":65,"word":"بنفسجي","emojis":["💜","🌸","🍇","🫐"],"difficulty":1,"category":"الوان","hint":"لون العنب والبنفسج"},{"id":66,"word":"ام","emojis":["👩","❤","🏠","👶"],"difficulty":1,"category":"عائلة","hint":"احن انسان في الوجود"},{"id":67,"word":"اب","emojis":["👨","🏠","❤","👶"],"difficulty":1,"category":"عائلة","hint":"رب الاسرة وعمودها"},{"id":68,"word":"اخ","emojis":["👦","🏠","❤","👨"],"difficulty":1,"category":"عائلة","hint":"ابن نفس الابوين"},{"id":69,"word":"اخت","emojis":["👧","🏠","❤","💕"],"difficulty":1,"category":"عائلة","hint":"بنت نفس الابوين"},{"id":70,"word":"جد","emojis":["👴","🏠","❤","📚"],"difficulty":1,"category":"عائلة","hint":"اب الاب او الام"},{"id":71,"word":"جدة","emojis":["👵","🏠","❤","🍪"],"difficulty":1,"category":"عائلة","hint":"ام الاب او الام"},{"id":72,"word":"طفل","emojis":["👶","🏠","💕","🍼"],"difficulty":1,"category":"عائلة","hint":"صغير السن"},{"id":73,"word":"بنت","emojis":["👧","❤","🏠","💕"],"difficulty":1,"category":"عائلة","hint":"انثى صغيرة السن"},{"id":74,"word":"ابن","emojis":["👦","❤","🏠","👨"],"difficulty":1,"category":"عائلة","hint":"الولد في العائلة"},{"id":75,"word":"عائلة","emojis":["👨‍👩‍👧‍👦","🏠","❤","🌟"],"difficulty":1,"category":"عائلة","hint":"اقرب الناس اليك"},{"id":76,"word":"شمس","emojis":["☀","🌞","🌅","🌄"],"difficulty":1,"category":"طبيعة","hint":"نجم مضيء في كبد السماء"},{"id":77,"word":"قمر","emojis":["🌙","🌛","🌜","🌑"],"difficulty":1,"category":"طبيعة","hint":"يضيء الليل ويغير شكله"},{"id":78,"word":"نجمة","emojis":["⭐","🌟","✨","💫"],"difficulty":1,"category":"طبيعة","hint":"تتلالا في سماء الليل"},{"id":79,"word":"مطر","emojis":["🌧","💧","☔","🌊"],"difficulty":1,"category":"طبيعة","hint":"قطرات ماء تنزل من السماء"},{"id":80,"word":"ثلج","emojis":["❄","☃","🌨","⬜"],"difficulty":1,"category":"طبيعة","hint":"يتساقط في الشتاء البارد"},{"id":81,"word":"ريح","emojis":["💨","🌬","🌿","🌀"],"difficulty":1,"category":"طبيعة","hint":"هواء يتحرك بسرعة"},{"id":82,"word":"نار","emojis":["🔥","🕯","♨","🏕"],"difficulty":1,"category":"طبيعة","hint":"تضيء وتدفئ وتحرق"},{"id":83,"word":"ماء","emojis":["💧","🌊","🚿","🏊"],"difficulty":1,"category":"طبيعة","hint":"اساس الحياة"},{"id":84,"word":"جبل","emojis":["⛰","🏔","🌿","💨"],"difficulty":1,"category":"طبيعة","hint":"تل ضخم شاهق الارتفاع"},{"id":85,"word":"بحر","emojis":["🌊","🏖","🚢","⛵"],"difficulty":1,"category":"طبيعة","hint":"مسطح مائي شاسع ومالح"},{"id":86,"word":"خبز","emojis":["🍞","🌾","🏠","🔥"],"difficulty":1,"category":"طعام","hint":"غذاء اساسي من الدقيق"},{"id":87,"word":"رز","emojis":["🍚","🥘","🌾","🍽"],"difficulty":1,"category":"طعام","hint":"حبوب بيضاء تطبخ"},{"id":88,"word":"لحم","emojis":["🥩","🔥","🍖","🍽"],"difficulty":1,"category":"طعام","hint":"ياخذ من الحيوانات"},{"id":89,"word":"بيض","emojis":["🥚","🍳","🐔","🍽"],"difficulty":1,"category":"طعام","hint":"ياتي من الدجاج والطيور"},{"id":90,"word":"حليب","emojis":["🥛","🐄","💧","🍼"],"difficulty":1,"category":"طعام","hint":"سائل ابيض غذائي"},{"id":91,"word":"جبن","emojis":["🧀","🍽","🐄","🍕"],"difficulty":1,"category":"طعام","hint":"مشتق من الحليب"},{"id":92,"word":"عسل","emojis":["🍯","🐝","🌸","💛"],"difficulty":1,"category":"طعام","hint":"سائل حلو تصنعه النحل"},{"id":93,"word":"شاي","emojis":["🍵","☕","🌿","💧"],"difficulty":1,"category":"طعام","hint":"مشروب دافئ من الاعشاب"},{"id":94,"word":"قهوة","emojis":["☕","🌰","🔥","💧"],"difficulty":1,"category":"طعام","hint":"مشروب بن اسمر اللون"},{"id":95,"word":"عصير","emojis":["🥤","🍊","💧","🌿"],"difficulty":1,"category":"طعام","hint":"مشروب من الفواكه"},{"id":96,"word":"بيت","emojis":["🏠","🌿","🏡","💕"],"difficulty":1,"category":"اماكن","hint":"مكان نسكن فيه"},{"id":97,"word":"مسجد","emojis":["🕌","🌙","⭐","🙏"],"difficulty":1,"category":"اماكن","hint":"بيت الله نصلي فيه"},{"id":98,"word":"مستشفى","emojis":["🏥","💊","❤","🩺"],"difficulty":1,"category":"اماكن","hint":"نذهب اليه عند المرض"},{"id":99,"word":"سوق","emojis":["🛒","🏪","💰","🌿"],"difficulty":1,"category":"اماكن","hint":"نتسوق منه الحاجيات"},{"id":100,"word":"مطعم","emojis":["🍽","🍳","🌟","😋"],"difficulty":1,"category":"اماكن","hint":"ناكل فيه الطعام"},{"id":101,"word":"حديقة","emojis":["🌿","🌸","🌳","🌺"],"difficulty":1,"category":"اماكن","hint":"مكان خضراء للترفيه"},{"id":102,"word":"شارع","emojis":["🛣","🏙","🚗","🌆"],"difficulty":1,"category":"اماكن","hint":"طريق يمشي فيه الناس"},{"id":103,"word":"غابة","emojis":["🌲","🌿","🍂","🏕"],"difficulty":1,"category":"اماكن","hint":"منطقة كثيفة بالاشجار"},{"id":104,"word":"شاطئ","emojis":["🏖","🌊","🌅","☀"],"difficulty":1,"category":"اماكن","hint":"حافة البحر الرملية"},{"id":105,"word":"مدينة","emojis":["🏙","🌆","🌃","🌉"],"difficulty":1,"category":"اماكن","hint":"تجمع سكاني كبير"},{"id":106,"word":"كتاب","emojis":["📚","📖","🌟","✍"],"difficulty":1,"category":"مدرسة","hint":"نقرا منه العلم"},{"id":107,"word":"قلم","emojis":["✏","📝","✍","📚"],"difficulty":1,"category":"مدرسة","hint":"نكتب به الحروف"},{"id":108,"word":"مدرسة","emojis":["📚","🏫","✏","🎒"],"difficulty":1,"category":"مدرسة","hint":"مكان نتعلم فيه"},{"id":109,"word":"معلم","emojis":["📚","🏫","✏","👨‍🏫"],"difficulty":1,"category":"مدرسة","hint":"يعلمنا العلم والمعرفة"},{"id":110,"word":"طالب","emojis":["📚","🏫","✏","🎒"],"difficulty":1,"category":"مدرسة","hint":"يدرس في المدرسة"},{"id":111,"word":"كرة","emojis":["⚽","🏀","🎾","🏐"],"difficulty":1,"category":"رياضة","hint":"تلعب في ملاعب متعددة"},{"id":112,"word":"سباحة","emojis":["🏊","💧","🌊","🏆"],"difficulty":1,"category":"رياضة","hint":"رياضة في الماء"},{"id":113,"word":"جري","emojis":["🏃","💨","💪","⏱"],"difficulty":1,"category":"رياضة","hint":"ابسط انواع الرياضة"},{"id":114,"word":"ملاكمة","emojis":["🥊","💪","🏆","🩸"],"difficulty":1,"category":"رياضة","hint":"رياضة قتالية باليدين"},{"id":115,"word":"فوز","emojis":["🏆","🌟","🎉","💪"],"difficulty":1,"category":"رياضة","hint":"تحقيق النصر في المباراة"},{"id":116,"word":"نوم","emojis":["😴","🌙","💤","🛏"],"difficulty":1,"category":"عام","hint":"راحة الجسم في الليل"},{"id":117,"word":"اكل","emojis":["🍽","😋","🔥","🌿"],"difficulty":1,"category":"عام","hint":"تناول الطعام للغذاء"},{"id":118,"word":"شرب","emojis":["💧","🥤","🌿","😋"],"difficulty":1,"category":"عام","hint":"ابتلاع السوائل"},{"id":119,"word":"حب","emojis":["❤","💕","🌹","💖"],"difficulty":1,"category":"عام","hint":"اقوى العواطف الانسانية"},{"id":120,"word":"وردة","emojis":["🌹","🌸","💕","🌺"],"difficulty":1,"category":"عام","hint":"زهرة جميلة تهدى"},{"id":121,"word":"زهرة","emojis":["🌸","🌺","🌷","💐"],"difficulty":1,"category":"عام","hint":"نبات جميل معطر"},{"id":122,"word":"شجرة","emojis":["🌲","🌿","🍂","🌳"],"difficulty":1,"category":"عام","hint":"نبات كبير ذو جذع"},{"id":123,"word":"حلم","emojis":["😴","🌙","💭","🌟"],"difficulty":1,"category":"عام","hint":"ما يراه النائم"},{"id":124,"word":"هدية","emojis":["🎁","💕","🌟","🎉"],"difficulty":1,"category":"عام","hint":"تقدم بمناسبة سعيدة"},{"id":125,"word":"احتفال","emojis":["🎉","🌟","💕","🎊"],"difficulty":1,"category":"عام","hint":"فرحة وبهجة بمناسبة"},{"id":126,"word":"طبيب","emojis":["🏥","💊","🩺","👨‍⚕️"],"difficulty":2,"category":"مهن","hint":"يشفي المرضى"},{"id":127,"word":"مهندس","emojis":["🔧","🏗","📐","💡"],"difficulty":2,"category":"مهن","hint":"يصمم ويبني"},{"id":128,"word":"محامي","emojis":["⚖","📜","👔","🏛"],"difficulty":2,"category":"مهن","hint":"يدافع امام المحاكم"},{"id":129,"word":"شرطي","emojis":["👮","🚔","🚨","🔒"],"difficulty":2,"category":"مهن","hint":"يحفظ الامن والنظام"},{"id":130,"word":"طيار","emojis":["✈","🌤","🛩","👨‍✈️"],"difficulty":2,"category":"مهن","hint":"يقود الطائرات"},{"id":131,"word":"طباخ","emojis":["🍳","👨‍🍳","🍽","🔥"],"difficulty":2,"category":"مهن","hint":"يصنع الاطباق اللذيذة"},{"id":132,"word":"فنان","emojis":["🎨","🖌","🖼","✨"],"difficulty":2,"category":"مهن","hint":"يرسم ويبدع"},{"id":133,"word":"موسيقار","emojis":["🎵","🎸","🎤","🎶"],"difficulty":2,"category":"مهن","hint":"يؤلف الموسيقى"},{"id":134,"word":"مزارع","emojis":["🌾","🚜","🌿","🏕"],"difficulty":2,"category":"مهن","hint":"يزرع الارض"},{"id":135,"word":"نجار","emojis":["🔨","🪚","🌲","🪵"],"difficulty":2,"category":"مهن","hint":"يصنع من الخشب"},{"id":136,"word":"كهربائي","emojis":["⚡","🔌","💡","🔧"],"difficulty":2,"category":"مهن","hint":"يتعامل مع الكهرباء"},{"id":137,"word":"مغني","emojis":["🎤","🎵","🌟","👨‍🎤"],"difficulty":2,"category":"مهن","hint":"يصدح بالاغاني"},{"id":138,"word":"ممثل","emojis":["🎭","🎬","🌟","🎤"],"difficulty":2,"category":"مهن","hint":"يؤدي الادوار"},{"id":139,"word":"صحفي","emojis":["📰","🎤","📸","💬"],"difficulty":2,"category":"مهن","hint":"يكتب الاخبار"},{"id":140,"word":"مصور","emojis":["📸","📷","🖼","🌟"],"difficulty":2,"category":"مهن","hint":"يلتقط الصور"},{"id":141,"word":"سيارة","emojis":["🚗","🛣","⛽","🔑"],"difficulty":2,"category":"مواصلات","hint":"تسير على الطريق"},{"id":142,"word":"حافلة","emojis":["🚌","🛣","🏙","🚏"],"difficulty":2,"category":"مواصلات","hint":"وسيلة نقل جماعية"},{"id":143,"word":"قطار","emojis":["🚂","🛤","🌿","💨"],"difficulty":2,"category":"مواصلات","hint":"يسير على السكة الحديدية"},{"id":144,"word":"طائرة","emojis":["✈","🌤","🌍","🛩"],"difficulty":2,"category":"مواصلات","hint":"تطير في السماء"},{"id":145,"word":"دراجة","emojis":["🚲","🌿","🏃","🛤"],"difficulty":2,"category":"مواصلات","hint":"تسير بالقدم والدواسة"},{"id":146,"word":"سفينة","emojis":["🚢","🌊","⛵","🌍"],"difficulty":2,"category":"مواصلات","hint":"تبحر في البحار"},{"id":147,"word":"قارب","emojis":["⛵","🌊","💧","🎣"],"difficulty":2,"category":"مواصلات","hint":"وسيلة صغيرة على الماء"},{"id":148,"word":"شاحنة","emojis":["🚛","🛣","📦","💪"],"difficulty":2,"category":"مواصلات","hint":"تنقل البضائع الثقيلة"},{"id":149,"word":"مترو","emojis":["🚇","🌆","🛤","🏙"],"difficulty":2,"category":"مواصلات","hint":"قطار تحت الارض"},{"id":150,"word":"صاروخ","emojis":["🚀","⭐","🌙","🔥"],"difficulty":2,"category":"مواصلات","hint":"يصل الى الفضاء"},{"id":151,"word":"هاتف","emojis":["📱","💬","📞","🌐"],"difficulty":2,"category":"تقنية","hint":"نتصل به مع الاخرين"},{"id":152,"word":"حاسوب","emojis":["💻","🖥","📊","🌐"],"difficulty":2,"category":"تقنية","hint":"جهاز الكتروني للحسابات"},{"id":153,"word":"تلفاز","emojis":["📺","🎬","🌟","🛋"],"difficulty":2,"category":"تقنية","hint":"نشاهد عليه البرامج"},{"id":154,"word":"ثلاجة","emojis":["❄","🏠","🍎","💧"],"difficulty":2,"category":"تقنية","hint":"تحفظ الطعام باردا"},{"id":155,"word":"غسالة","emojis":["💧","🌀","🏠","👕"],"difficulty":2,"category":"تقنية","hint":"تغسل الملابس"},{"id":156,"word":"مكيف","emojis":["❄","💨","🏠","🔌"],"difficulty":2,"category":"تقنية","hint":"يبرد الهواء"},{"id":157,"word":"فرن","emojis":["🔥","🍞","🏠","🍕"],"difficulty":2,"category":"تقنية","hint":"يطبخ الطعام بالحرارة"},{"id":158,"word":"انترنت","emojis":["🌐","💻","📱","🔗"],"difficulty":2,"category":"تقنية","hint":"شبكة معلومات عالمية"},{"id":159,"word":"روبوت","emojis":["🤖","⚙","💡","🔧"],"difficulty":2,"category":"تقنية","hint":"الة تعمل تلقائيا"},{"id":160,"word":"بطارية","emojis":["🔋","⚡","💡","🔌"],"difficulty":2,"category":"تقنية","hint":"تخزن الطاقة الكهربائية"},{"id":161,"word":"فندق","emojis":["🏨","🛏","🌟","💼"],"difficulty":2,"category":"اماكن","hint":"نقيم فيه عند السفر"},{"id":162,"word":"متحف","emojis":["🏛","🖼","📜","🔍"],"difficulty":2,"category":"اماكن","hint":"يحفظ التاريخ والاثار"},{"id":163,"word":"مكتبة","emojis":["📚","🏛","🔍","📖"],"difficulty":2,"category":"اماكن","hint":"تحتوي على الكتب"},{"id":164,"word":"سينما","emojis":["🎬","🍿","🌟","🎭"],"difficulty":2,"category":"اماكن","hint":"نشاهد فيه الافلام"},{"id":165,"word":"مسرح","emojis":["🎭","🌟","🎬","🎤"],"difficulty":2,"category":"اماكن","hint":"نشاهد فيه العروض"},{"id":166,"word":"مطار","emojis":["✈","🛩","🌍","🛄"],"difficulty":2,"category":"اماكن","hint":"مكان اقلاع الطائرات"},{"id":167,"word":"جامعة","emojis":["🎓","📚","🏫","🌍"],"difficulty":2,"category":"اماكن","hint":"اعلى مرحلة للتعليم"},{"id":168,"word":"بنك","emojis":["🏦","💰","💳","🔒"],"difficulty":2,"category":"اماكن","hint":"نودع فيه الاموال"},{"id":169,"word":"صيدلية","emojis":["💊","🏪","🔬","🩺"],"difficulty":2,"category":"اماكن","hint":"تبيع الادوية"},{"id":170,"word":"قصر","emojis":["🏰","👑","🌟","🏛"],"difficulty":2,"category":"اماكن","hint":"منزل الملوك الفاخر"},{"id":171,"word":"بركان","emojis":["🌋","🔥","💥","⛰"],"difficulty":2,"category":"طبيعة","hint":"جبل يقذف الحمم"},{"id":172,"word":"زلزال","emojis":["🌍","⚡","💥","🏚"],"difficulty":2,"category":"طبيعة","hint":"اهتزاز الارض"},{"id":173,"word":"اعصار","emojis":["🌀","💨","🌊","⚡"],"difficulty":2,"category":"طبيعة","hint":"عواصف دوامية مدمرة"},{"id":174,"word":"قوس قزح","emojis":["🌈","🌧","☀","✨"],"difficulty":2,"category":"طبيعة","hint":"قوس الوان بعد المطر"},{"id":175,"word":"شلال","emojis":["💧","🌊","🌿","⛰"],"difficulty":2,"category":"طبيعة","hint":"سقوط الماء من الجبل"},{"id":176,"word":"صحراء","emojis":["🏜","☀","🐪","🌵"],"difficulty":2,"category":"طبيعة","hint":"ارض جافة رملية"},{"id":177,"word":"جزيرة","emojis":["🌴","🌊","🏖","🌅"],"difficulty":2,"category":"طبيعة","hint":"ارض محاطة بالماء"},{"id":178,"word":"بحيرة","emojis":["💧","🌿","🏞","🦆"],"difficulty":2,"category":"طبيعة","hint":"مسطح مائي محاط بالارض"},{"id":179,"word":"نهر","emojis":["🌊","💧","🌿","🏞"],"difficulty":2,"category":"طبيعة","hint":"مجرى مائي متدفق"},{"id":180,"word":"كهف","emojis":["🪨","🦇","🌑","🌿"],"difficulty":2,"category":"طبيعة","hint":"حفرة في الجبل"},{"id":181,"word":"كرة قدم","emojis":["⚽","🏃","🏆","🥊"],"difficulty":2,"category":"رياضة","hint":"الرياضة الاكثر شعبية"},{"id":182,"word":"كرة سلة","emojis":["🏀","🏃","🏆","🎯"],"difficulty":2,"category":"رياضة","hint":"ترمى في السلة"},{"id":183,"word":"تنس","emojis":["🎾","🏃","🏆","🌟"],"difficulty":2,"category":"رياضة","hint":"تضرب بمضرب"},{"id":184,"word":"جمباز","emojis":["🤸","🌟","🏆","💪"],"difficulty":2,"category":"رياضة","hint":"حركات بهلوانية"},{"id":185,"word":"رفع اثقال","emojis":["🏋","💪","🏆","💥"],"difficulty":2,"category":"رياضة","hint":"رياضة القوة"},{"id":186,"word":"ركوب خيل","emojis":["🐴","🏇","🌿","🏆"],"difficulty":2,"category":"رياضة","hint":"الفروسية الاصيلة"},{"id":187,"word":"رماية","emojis":["🏹","🎯","💪","🏆"],"difficulty":2,"category":"رياضة","hint":"اصابة الهدف بالسهم"},{"id":188,"word":"كاراتيه","emojis":["🥋","💪","🏆","👊"],"difficulty":2,"category":"رياضة","hint":"فن قتالي ياباني"},{"id":189,"word":"تسلق","emojis":["🧗","⛰","💪","🌿"],"difficulty":2,"category":"رياضة","hint":"الصعود على الجبال"},{"id":190,"word":"غوص","emojis":["🤿","💧","🌊","🐟"],"difficulty":2,"category":"رياضة","hint":"الغوص في اعماق البحر"},{"id":191,"word":"قميص","emojis":["👔","🌿","🛍","🧵"],"difficulty":2,"category":"ملابس","hint":"يلبس على الجزء العلوي"},{"id":192,"word":"فستان","emojis":["👗","🌸","🛍","💕"],"difficulty":2,"category":"ملابس","hint":"ملبس نسائي جميل"},{"id":193,"word":"جاكيت","emojis":["🧥","❄","🌿","🛍"],"difficulty":2,"category":"ملابس","hint":"يلبس فوق الملابس"},{"id":194,"word":"بيجامة","emojis":["😴","🌙","🏠","🛏"],"difficulty":2,"category":"ملابس","hint":"ملابس النوم"},{"id":195,"word":"قبعة","emojis":["🎩","☀","🌿","🎪"],"difficulty":2,"category":"ملابس","hint":"توضع على الراس"},{"id":196,"word":"نظارة","emojis":["👓","🔍","👁","📚"],"difficulty":2,"category":"ملابس","hint":"تساعد في الرؤية"},{"id":197,"word":"خاتم","emojis":["💍","💕","🌟","✨"],"difficulty":2,"category":"ملابس","hint":"حلي في الاصبع"},{"id":198,"word":"حذاء","emojis":["👟","🏃","🌿","🛍"],"difficulty":2,"category":"ملابس","hint":"نلبسه للقدم"},{"id":199,"word":"جوارب","emojis":["🧦","🌿","🏠","👟"],"difficulty":2,"category":"ملابس","hint":"تلبس في القدم"},{"id":200,"word":"عباءة","emojis":["🖤","🌙","🕌","🌿"],"difficulty":2,"category":"ملابس","hint":"لباس اسلامي للمراة"},{"id":201,"word":"سرير","emojis":["🛏","😴","🌙","🏠"],"difficulty":2,"category":"منزل","hint":"نرتاح عليه في الليل"},{"id":202,"word":"كرسي","emojis":["🪑","🏠","🌿","💺"],"difficulty":2,"category":"منزل","hint":"نجلس عليه"},{"id":203,"word":"طاولة","emojis":["🪑","🏠","🌿","🍽"],"difficulty":2,"category":"منزل","hint":"نضع عليه الاشياء"},{"id":204,"word":"اريكة","emojis":["🛋","🏠","🌿","🌟"],"difficulty":2,"category":"منزل","hint":"كرسي وثير كبير"},{"id":205,"word":"مصباح","emojis":["💡","🏠","🌙","🌟"],"difficulty":2,"category":"منزل","hint":"يضيء الغرفة"},{"id":206,"word":"مراة","emojis":["🪞","💕","🌟","✨"],"difficulty":2,"category":"منزل","hint":"تعكس صورتك"},{"id":207,"word":"وسادة","emojis":["😴","🌙","🏠","☁"],"difficulty":2,"category":"منزل","hint":"نضعها تحت راسنا"},{"id":208,"word":"بطانية","emojis":["😴","🌙","🏠","❤"],"difficulty":2,"category":"منزل","hint":"تدفئنا في النوم"},{"id":209,"word":"باب","emojis":["🚪","🔑","🏠","🌿"],"difficulty":2,"category":"منزل","hint":"مدخل البيت"},{"id":210,"word":"نافذة","emojis":["🪟","🌿","🌸","☀"],"difficulty":2,"category":"منزل","hint":"نطل منها على الخارج"},{"id":211,"word":"شوكولاتة","emojis":["🍫","😋","💛","🌟"],"difficulty":2,"category":"طعام","hint":"حلوى بنية اللون"},{"id":212,"word":"كعكة","emojis":["🎂","🍰","🕯","🎉"],"difficulty":2,"category":"طعام","hint":"تعمل في المناسبات"},{"id":213,"word":"حلوى","emojis":["🍬","🌈","🎉","💕"],"difficulty":2,"category":"طعام","hint":"تسعد الاطفال"},{"id":214,"word":"ايس كريم","emojis":["🍦","❄","🌈","😋"],"difficulty":2,"category":"طعام","hint":"حلوى باردة مثلجة"},{"id":215,"word":"بيتزا","emojis":["🍕","🧀","🔥","😋"],"difficulty":2,"category":"طعام","hint":"فطيرة ايطالية لذيذة"},{"id":216,"word":"برجر","emojis":["🍔","🍟","😋","🔥"],"difficulty":2,"category":"طعام","hint":"وجبة سريعة شهيرة"},{"id":217,"word":"شاورمة","emojis":["🌯","🔥","🧅","😋"],"difficulty":2,"category":"طعام","hint":"اكلة شرقية لذيذة"},{"id":218,"word":"فلافل","emojis":["🫘","🔥","🥙","😋"],"difficulty":2,"category":"طعام","hint":"كرات مقلية من الحمص"},{"id":219,"word":"حمص","emojis":["🫘","🌿","🥙","😋"],"difficulty":2,"category":"طعام","hint":"معجون الحمص المفضل"},{"id":220,"word":"كبسة","emojis":["🍚","🔥","🌿","🐔"],"difficulty":2,"category":"طعام","hint":"اشهر اكلة سعودية"},{"id":221,"word":"علم","emojis":["🔬","💡","🌍","🧪"],"difficulty":2,"category":"علوم","hint":"منهج لفهم الكون"},{"id":222,"word":"رياضيات","emojis":["🔢","📊","💡","🧮"],"difficulty":2,"category":"علوم","hint":"علم الارقام والحساب"},{"id":223,"word":"فيزياء","emojis":["⚡","🔬","💡","🌍"],"difficulty":2,"category":"علوم","hint":"علم قوانين الطبيعة"},{"id":224,"word":"كيمياء","emojis":["🧪","🔬","💡","⚗"],"difficulty":2,"category":"علوم","hint":"علم المواد وتفاعلاتها"},{"id":225,"word":"تاريخ","emojis":["📜","⏰","🏛","📚"],"difficulty":2,"category":"علوم","hint":"يدرس احداث الماضي"},{"id":226,"word":"جغرافيا","emojis":["🌍","🗺","🏔","🌊"],"difficulty":2,"category":"علوم","hint":"علم الارض والمناطق"},{"id":227,"word":"مجهر","emojis":["🔬","🌿","💡","🧪"],"difficulty":2,"category":"علوم","hint":"يكبر الاشياء الصغيرة"},{"id":228,"word":"تلسكوب","emojis":["🔭","🌙","⭐","🌌"],"difficulty":2,"category":"علوم","hint":"يرى الاجرام البعيدة"},{"id":229,"word":"شهادة","emojis":["🎓","📜","🌟","💼"],"difficulty":2,"category":"علوم","hint":"وثيقة التخرج"},{"id":230,"word":"اختراع","emojis":["💡","⚙","🌟","✨"],"difficulty":2,"category":"علوم","hint":"ابداع جديد مفيد"},{"id":231,"word":"فرح","emojis":["😊","🌟","💕","🎉"],"difficulty":2,"category":"مشاعر","hint":"شعور ايجابي رائع"},{"id":232,"word":"حزن","emojis":["😢","💔","🌧","💜"],"difficulty":2,"category":"مشاعر","hint":"شعور بالالم الداخلي"},{"id":233,"word":"غضب","emojis":["😡","🔥","💥","😤"],"difficulty":2,"category":"مشاعر","hint":"انفعال شديد"},{"id":234,"word":"خوف","emojis":["😨","🌙","👻","💀"],"difficulty":2,"category":"مشاعر","hint":"شعور بالترهيب"},{"id":235,"word":"دهشة","emojis":["😲","🎉","💥","🌟"],"difficulty":2,"category":"مشاعر","hint":"مفاجاة مدهشة"},{"id":236,"word":"فخر","emojis":["😊","🏆","💪","👑"],"difficulty":2,"category":"مشاعر","hint":"اعتزاز بالنفس"},{"id":237,"word":"شجاعة","emojis":["💪","🦁","🌟","🛡"],"difficulty":2,"category":"مشاعر","hint":"الاقدام دون خوف"},{"id":238,"word":"صبر","emojis":["⏰","🌿","🌅","💕"],"difficulty":2,"category":"مشاعر","hint":"الانتظار باحتمال"},{"id":239,"word":"كرم","emojis":["🤝","❤","🌟","💰"],"difficulty":2,"category":"مشاعر","hint":"العطاء بسخاء"},{"id":240,"word":"امل","emojis":["🌅","🌟","💕","❤"],"difficulty":2,"category":"مشاعر","hint":"التطلع لمستقبل افضل"},{"id":241,"word":"السعودية","emojis":["🇸🇦","🌴","🕌","☀"],"difficulty":2,"category":"دول","hint":"ارض الحرمين الشريفين"},{"id":242,"word":"مصر","emojis":["🏛","🌊","🐪","🌍"],"difficulty":2,"category":"دول","hint":"ام الدنيا وبلد الفراعنة"},{"id":243,"word":"الامارات","emojis":["🌆","💰","🏗","🌊"],"difficulty":2,"category":"دول","hint":"دولة التنمية والتطوير"},{"id":244,"word":"تركيا","emojis":["🕌","🌊","🌹","🌍"],"difficulty":2,"category":"دول","hint":"بلد الحضارتين"},{"id":245,"word":"اليابان","emojis":["⛩","🌸","🌊","🗾"],"difficulty":2,"category":"دول","hint":"ارض الشمس المشرقة"},{"id":246,"word":"فرنسا","emojis":["🗼","🌹","🍷","🌆"],"difficulty":2,"category":"دول","hint":"بلد الجمال والموضة"},{"id":247,"word":"امريكا","emojis":["🗽","🌊","🌍","⭐"],"difficulty":2,"category":"دول","hint":"اكبر اقتصاد في العالم"},{"id":248,"word":"الصين","emojis":["🐉","🌊","🌿","🏯"],"difficulty":2,"category":"دول","hint":"اكبر دولة من حيث السكان"},{"id":249,"word":"روسيا","emojis":["❄","🌲","🐻","🏰"],"difficulty":2,"category":"دول","hint":"اكبر دولة مساحة"},{"id":250,"word":"البرازيل","emojis":["⚽","🌿","☕","🌊"],"difficulty":2,"category":"دول","hint":"دولة كرة القدم والامازون"},{"id":251,"word":"قرآن","emojis":["📖","🌙","⭐","🕌"],"difficulty":2,"category":"اسلام","hint":"كتاب الله المقدس"},{"id":252,"word":"صلاة","emojis":["🕌","🙏","🌙","⭐"],"difficulty":2,"category":"اسلام","hint":"عماد الدين الاسلامي"},{"id":253,"word":"رمضان","emojis":["🌙","⭐","🕌","🌟"],"difficulty":2,"category":"اسلام","hint":"شهر الصيام المبارك"},{"id":254,"word":"حج","emojis":["🕋","🌙","⭐","🤍"],"difficulty":2,"category":"اسلام","hint":"ركن من اركان الاسلام"},{"id":255,"word":"كعبة","emojis":["🕋","🌙","⭐","🤍"],"difficulty":2,"category":"اسلام","hint":"قبلة المسلمين في مكة"},{"id":256,"word":"زكاة","emojis":["💰","❤","🤝","🌟"],"difficulty":2,"category":"اسلام","hint":"فريضة مالية اسلامية"},{"id":257,"word":"صوم","emojis":["🌙","🕌","💧","⭐"],"difficulty":2,"category":"اسلام","hint":"الامتناع عن الطعام"},{"id":258,"word":"اذان","emojis":["🕌","🔊","🌙","⭐"],"difficulty":2,"category":"اسلام","hint":"نداء الصلاة"},{"id":259,"word":"وضوء","emojis":["💧","🙏","🕌","🌙"],"difficulty":2,"category":"اسلام","hint":"التطهر قبل الصلاة"},{"id":260,"word":"افطار","emojis":["🌙","🍽","🌟","🕌"],"difficulty":2,"category":"اسلام","hint":"الاكل بعد الاذان"},{"id":261,"word":"مغامرة","emojis":["🗺","🌍","⛰","🌟"],"difficulty":3,"category":"عام","hint":"رحلة مثيرة مجهولة"},{"id":262,"word":"ذكاء اصطناعي","emojis":["🤖","💡","🌐","🔬"],"difficulty":3,"category":"تقنية","hint":"الحاسب يتعلم كالانسان"},{"id":263,"word":"برمجة","emojis":["💻","🔡","🌐","⚙"],"difficulty":3,"category":"تقنية","hint":"لغة التواصل مع الحاسوب"},{"id":264,"word":"شبكة","emojis":["🌐","🔗","💻","🔧"],"difficulty":3,"category":"تقنية","hint":"تربط الاجهزة بعضها"},{"id":265,"word":"واي فاي","emojis":["📶","🌐","💻","📱"],"difficulty":3,"category":"تقنية","hint":"اتصال لاسلكي بالانترنت"},{"id":266,"word":"ساتلايت","emojis":["🛰","🌍","🌐","📡"],"difficulty":3,"category":"تقنية","hint":"قمر اصطناعي في الفضاء"},{"id":267,"word":"طاقة شمسية","emojis":["☀","⚡","🌍","🔋"],"difficulty":3,"category":"تقنية","hint":"طاقة متجددة من الشمس"},{"id":268,"word":"فيلسوف","emojis":["🤔","💭","📚","🌟"],"difficulty":3,"category":"مهن","hint":"يبحث في اسئلة الوجود"},{"id":269,"word":"محقق","emojis":["🔍","🕵","📋","🔒"],"difficulty":3,"category":"مهن","hint":"يكتشف الجرائم"},{"id":270,"word":"دبلوماسي","emojis":["🤝","🌐","🏛","🕊"],"difficulty":3,"category":"مهن","hint":"يمثل بلده في الخارج"},{"id":271,"word":"رائد اعمال","emojis":["💼","💡","🌟","📊"],"difficulty":3,"category":"مهن","hint":"يبني شركات ناجحة"},{"id":272,"word":"عالم","emojis":["🔬","💡","🌍","🧪"],"difficulty":3,"category":"مهن","hint":"يبحث في العلوم"},{"id":273,"word":"مخترع","emojis":["💡","⚙","🌟","✨"],"difficulty":3,"category":"مهن","hint":"يبتكر اشياء جديدة"},{"id":274,"word":"مستكشف","emojis":["🗺","🧭","🌍","⛵"],"difficulty":3,"category":"مهن","hint":"يكتشف مناطق مجهولة"},{"id":275,"word":"طيار فضاء","emojis":["🚀","🌙","⭐","👨‍🚀"],"difficulty":3,"category":"مهن","hint":"يسافر للفضاء"},{"id":276,"word":"الاردن","emojis":["🌹","🏛","🌊","🌿"],"difficulty":3,"category":"دول","hint":"بلد البتراء والطبيعة"},{"id":277,"word":"لبنان","emojis":["🌲","🌊","🌹","🏔"],"difficulty":3,"category":"دول","hint":"ارز لبنان الشهير"},{"id":278,"word":"المغرب","emojis":["🌊","🏛","🌹","🌿"],"difficulty":3,"category":"دول","hint":"بوابة القارة الافريقية"},{"id":279,"word":"ايران","emojis":["🕌","🌹","🌊","🌿"],"difficulty":3,"category":"دول","hint":"بلد الفرس والحضارة"},{"id":280,"word":"اليونان","emojis":["🏛","🌊","☀","🫒"],"difficulty":3,"category":"دول","hint":"مهد الحضارة الغربية"},{"id":281,"word":"القاهرة","emojis":["🏛","🌊","🐪","🌆"],"difficulty":3,"category":"مدن","hint":"عاصمة مصر ام الدنيا"},{"id":282,"word":"دبي","emojis":["🏙","💰","🌆","🏗"],"difficulty":3,"category":"مدن","hint":"مدينة المستقبل"},{"id":283,"word":"اسطنبول","emojis":["🕌","🌊","🌉","🌹"],"difficulty":3,"category":"مدن","hint":"مدينة القارتين"},{"id":284,"word":"مكة المكرمة","emojis":["🕋","🌙","⭐","🕌"],"difficulty":3,"category":"مدن","hint":"اقدس بقعة على الارض"},{"id":285,"word":"المدينة المنورة","emojis":["🕌","🌙","⭐","🌹"],"difficulty":3,"category":"مدن","hint":"ثاني اقدس مدينة اسلامية"},{"id":286,"word":"عود","emojis":["🎸","🌹","🌿","🎵"],"difficulty":3,"category":"موسيقى","hint":"الة موسيقية عربية"},{"id":287,"word":"ناي","emojis":["🎶","💨","🌿","🌙"],"difficulty":3,"category":"موسيقى","hint":"الة نفخية خشبية"},{"id":288,"word":"طبل","emojis":["🥁","🎵","🔊","💥"],"difficulty":3,"category":"موسيقى","hint":"الة ايقاعية"},{"id":289,"word":"كمان","emojis":["🎻","🎵","🌟","💕"],"difficulty":3,"category":"موسيقى","hint":"الة وترية كلاسيكية"},{"id":290,"word":"بيانو","emojis":["🎹","🎵","🌟","🏠"],"difficulty":3,"category":"موسيقى","hint":"الة مفاتيح مشهورة"},{"id":291,"word":"حرية","emojis":["🕊","🌍","💨","🌟"],"difficulty":3,"category":"مفاهيم","hint":"اغلى ما يملكه الانسان"},{"id":292,"word":"عدالة","emojis":["⚖","🌟","❤","🏛"],"difficulty":3,"category":"مفاهيم","hint":"اعطاء كل ذي حق حقه"},{"id":293,"word":"سلام","emojis":["🕊","❤","🌟","🌍"],"difficulty":3,"category":"مفاهيم","hint":"الهدوء وانعدام الحرب"},{"id":294,"word":"حكمة","emojis":["🦉","📚","💡","🌟"],"difficulty":3,"category":"مفاهيم","hint":"العلم المقرون بالتجربة"},{"id":295,"word":"ابداع","emojis":["🎨","💡","✨","🌟"],"difficulty":3,"category":"مفاهيم","hint":"توليد افكار جديدة"},{"id":296,"word":"ثقافة","emojis":["📚","🌍","🎭","🌟"],"difficulty":3,"category":"مفاهيم","hint":"موروث فكري وحضاري"},{"id":297,"word":"تراث","emojis":["🏛","📜","🌹","🌍"],"difficulty":3,"category":"مفاهيم","hint":"ارث الاجداد"},{"id":298,"word":"حضارة","emojis":["🏛","📜","🌍","🌟"],"difficulty":3,"category":"مفاهيم","hint":"تطور الانسان وعلمه"},{"id":299,"word":"استدامة","emojis":["🌍","🌿","♻","💡"],"difficulty":3,"category":"مفاهيم","hint":"مواكبة مصالح الاجيال"},{"id":300,"word":"بيئة","emojis":["🌍","🌿","🌊","💡"],"difficulty":3,"category":"مفاهيم","hint":"المحيط الذي نعيش فيه"},{"id":301,"word":"ليلة القدر","emojis":["🌙","⭐","🕌","✨"],"difficulty":3,"category":"اسلام","hint":"افضل ليلة في السنة"},{"id":302,"word":"زمزم","emojis":["💧","🕋","🌙","⭐"],"difficulty":3,"category":"اسلام","hint":"بئر مقدسة في مكة"},{"id":303,"word":"احرام","emojis":["🤍","🕋","🌙","⭐"],"difficulty":3,"category":"اسلام","hint":"ملابس الحج البيضاء"},{"id":304,"word":"طواف","emojis":["🕋","🔄","🌙","⭐"],"difficulty":3,"category":"اسلام","hint":"الدوران حول الكعبة"},{"id":305,"word":"منى","emojis":["⛺","🐑","🌙","⭐"],"difficulty":3,"category":"اسلام","hint":"مكان في الحج المبارك"},{"id":306,"word":"عرفات","emojis":["⛺","🌙","⭐","🌿"],"difficulty":3,"category":"اسلام","hint":"وقفة الحج الكبرى"},{"id":307,"word":"تسبيح","emojis":["📿","🙏","🌙","⭐"],"difficulty":3,"category":"اسلام","hint":"ذكر الله وتقديسه"},{"id":308,"word":"تراويح","emojis":["🕌","🌙","⭐","🙏"],"difficulty":3,"category":"اسلام","hint":"صلاة في رمضان"},{"id":309,"word":"اعتكاف","emojis":["🕌","🌙","⭐","😴"],"difficulty":3,"category":"اسلام","hint":"الاقامة في المسجد"},{"id":310,"word":"بسملة","emojis":["📖","🌙","⭐","🕌"],"difficulty":3,"category":"اسلام","hint":"بسم الله الرحمن الرحيم"},{"id":311,"word":"علم النفس","emojis":["🧠","💭","💡","📚"],"difficulty":3,"category":"علوم","hint":"دراسة السلوك والعقل"},{"id":312,"word":"اقتصاد","emojis":["💰","📊","🌍","💼"],"difficulty":3,"category":"علوم","hint":"علم توزيع الموارد"},{"id":313,"word":"سياسة","emojis":["🏛","🗳","💼","🌍"],"difficulty":3,"category":"علوم","hint":"فن ادارة الدولة"},{"id":314,"word":"فلسفة","emojis":["💭","🤔","🌟","📚"],"difficulty":3,"category":"علوم","hint":"البحث في الوجود"},{"id":315,"word":"لغويات","emojis":["🔤","💬","🌐","📚"],"difficulty":3,"category":"علوم","hint":"دراسة اللغة"},{"id":316,"word":"علم الفلك","emojis":["🔭","🌙","⭐","🌌"],"difficulty":3,"category":"علوم","hint":"دراسة الاجرام السماوية"},{"id":317,"word":"مسرحية","emojis":["🎭","🌟","🎬","🎤"],"difficulty":3,"category":"فنون","hint":"عرض درامي"},{"id":318,"word":"رواية","emojis":["📚","✍","🌟","💬"],"difficulty":3,"category":"فنون","hint":"كتاب قصصي طويل"},{"id":319,"word":"شعر","emojis":["✍","📚","🌟","💬"],"difficulty":3,"category":"فنون","hint":"كلام موزون مقفى"},{"id":320,"word":"خط عربي","emojis":["✍","🌹","🌟","🎨"],"difficulty":3,"category":"فنون","hint":"فن كتابة الحروف"},{"id":321,"word":"ميكانيكي","emojis":["🔧","🚗","⚙","🛠"],"difficulty":3,"category":"مهن","hint":"يصلح المحركات"},{"id":322,"word":"حلاق","emojis":["✂","💈","👨‍🦲","🪒"],"difficulty":3,"category":"مهن","hint":"يقص الشعر"},{"id":323,"word":"خباز","emojis":["🍞","🥐","🔥","👨‍🍳"],"difficulty":3,"category":"مهن","hint":"يصنع الخبز"},{"id":324,"word":"صياد","emojis":["🎣","🐟","🌊","⛵"],"difficulty":3,"category":"مهن","hint":"يصيد الاسماك"},{"id":325,"word":"بستاني","emojis":["🌿","🌸","🪴","✂"],"difficulty":3,"category":"مهن","hint":"يعتني بالحدائق"},{"id":326,"word":"محاسب","emojis":["💰","📊","💻","🔢"],"difficulty":3,"category":"مهن","hint":"يدير الحسابات المالية"},{"id":327,"word":"مترجم","emojis":["🌐","📝","💬","🔤"],"difficulty":3,"category":"مهن","hint":"يترجم بين اللغات"},{"id":328,"word":"مدرب","emojis":["🏋","📋","💪","🏆"],"difficulty":3,"category":"مهن","hint":"يعلم مهارات رياضية"},{"id":329,"word":"قاضي","emojis":["⚖","🏛","👔","📜"],"difficulty":3,"category":"مهن","hint":"يحكم في القضايا"},{"id":330,"word":"جندي","emojis":["🪖","🏕","🎖","🔫"],"difficulty":3,"category":"مهن","hint":"يدافع عن وطنه"},{"id":331,"word":"ديمقراطية","emojis":["🗳","🌍","🕊","🌟"],"difficulty":4,"category":"سياسة","hint":"نظام حكم الشعب"},{"id":332,"word":"استراتيجية","emojis":["🗺","♟","💡","📋"],"difficulty":4,"category":"ادارة","hint":"خطة شاملة لتحقيق هدف"},{"id":333,"word":"مفاوضات","emojis":["🤝","💬","⚖","🌟"],"difficulty":4,"category":"ادارة","hint":"محادثات للتوصل لاتفاق"},{"id":334,"word":"استثمار","emojis":["💰","📈","🌟","💼"],"difficulty":4,"category":"اقتصاد","hint":"توظيف المال للربح"},{"id":335,"word":"ميزانية","emojis":["💰","📊","💼","📋"],"difficulty":4,"category":"اقتصاد","hint":"خطة مالية سنوية"},{"id":336,"word":"تضخم","emojis":["📈","💰","🌍","💡"],"difficulty":4,"category":"اقتصاد","hint":"ارتفاع مستوى الاسعار"},{"id":337,"word":"تشريع","emojis":["📜","🏛","💡","🌟"],"difficulty":4,"category":"قانون","hint":"وضع القوانين والانظمة"},{"id":338,"word":"دستور","emojis":["📜","⚖","🏛","🌟"],"difficulty":4,"category":"قانون","hint":"القانون الاساسي للدولة"},{"id":339,"word":"حقوق الانسان","emojis":["❤","🌍","⚖","🕊"],"difficulty":4,"category":"قانون","hint":"حقوق اساسية للبشر"},{"id":340,"word":"معاهدة","emojis":["📜","🤝","🌍","🕊"],"difficulty":4,"category":"قانون","hint":"اتفاق رسمي بين دول"},{"id":341,"word":"ثورة صناعية","emojis":["🏭","⚙","💨","🌍"],"difficulty":4,"category":"تاريخ","hint":"تحول كبير في الانتاج"},{"id":342,"word":"العصر الذهبي","emojis":["🌟","📚","💡","🕌"],"difficulty":4,"category":"تاريخ","hint":"فترة ازدهار الحضارة الاسلامية"},{"id":343,"word":"الخلافة الاسلامية","emojis":["🕌","👑","📜","🌍"],"difficulty":4,"category":"تاريخ","hint":"حكم اسلامي موحد"},{"id":344,"word":"الحروب الصليبية","emojis":["⚔","🌍","📜","💀"],"difficulty":4,"category":"تاريخ","hint":"حروب دينية قديمة"},{"id":345,"word":"الفتح الاسلامي","emojis":["⚔","🌍","🕌","📜"],"difficulty":4,"category":"تاريخ","hint":"انتشار الاسلام"},{"id":346,"word":"علم الوراثة","emojis":["🧬","🔬","💡","🌿"],"difficulty":4,"category":"علوم","hint":"دراسة الجينات"},{"id":347,"word":"الفيزياء النووية","emojis":["⚛","🔬","💡","⚡"],"difficulty":4,"category":"علوم","hint":"دراسة النواة الذرية"},{"id":348,"word":"علم الاحياء الدقيقة","emojis":["🦠","🔬","💡","🌿"],"difficulty":4,"category":"علوم","hint":"دراسة الكائنات الدقيقة"},{"id":349,"word":"مجرة","emojis":["🌌","⭐","🌙","🚀"],"difficulty":4,"category":"فضاء","hint":"مجموعة ضخمة من النجوم"},{"id":350,"word":"كوكب","emojis":["🌍","🌙","⭐","🚀"],"difficulty":4,"category":"فضاء","hint":"جرم سماوي يدور حول النجم"},{"id":351,"word":"ثقب اسود","emojis":["🌑","⭐","💀","🌌"],"difficulty":4,"category":"فضاء","hint":"منطقة تبتلع كل شيء"},{"id":352,"word":"نيزك","emojis":["☄","⭐","💥","🌍"],"difficulty":4,"category":"فضاء","hint":"صخرة فضائية"},{"id":353,"word":"انفجار عظيم","emojis":["💥","🌌","⭐","🚀"],"difficulty":4,"category":"فضاء","hint":"نظرية نشاة الكون"},{"id":354,"word":"سلسلة كتل","emojis":["🔗","💻","🔒","🌐"],"difficulty":4,"category":"تقنية","hint":"تقنية البيانات المشفرة"},{"id":355,"word":"واقع افتراضي","emojis":["🥽","🌐","💡","✨"],"difficulty":4,"category":"تقنية","hint":"عالم رقمي محاكي"},{"id":356,"word":"حوسبة سحابية","emojis":["☁","💻","🌐","🔗"],"difficulty":4,"category":"تقنية","hint":"خدمات الحوسبة عبر الانترنت"},{"id":357,"word":"انترنت الاشياء","emojis":["📡","🌐","🔗","💡"],"difficulty":4,"category":"تقنية","hint":"ربط الاجهزة بالانترنت"},{"id":358,"word":"امن سيبراني","emojis":["💻","🔒","⚡","🌐"],"difficulty":4,"category":"تقنية","hint":"حماية الانظمة الرقمية"},{"id":359,"word":"عملة مشفرة","emojis":["🔐","💰","🌐","💻"],"difficulty":4,"category":"تقنية","hint":"عملة رقمية لامركزية"},{"id":360,"word":"واقع معزز","emojis":["🌍","👁","💡","✨"],"difficulty":4,"category":"تقنية","hint":"دمج الواقع بالرقمي"},{"id":361,"word":"تعلم عميق","emojis":["🤖","🧠","📊","🌐"],"difficulty":4,"category":"تقنية","hint":"التعلم الالي المتقدم"},{"id":362,"word":"خوارزمية","emojis":["🔢","💻","⚙","💡"],"difficulty":4,"category":"تقنية","hint":"سلسلة خطوات حل مسالة"},{"id":363,"word":"زراعة اعضاء","emojis":["🏥","❤","🔬","💡"],"difficulty":4,"category":"طب","hint":"نقل العضو من متبرع"},{"id":364,"word":"هندسة وراثية","emojis":["🧬","🔧","💡","🌿"],"difficulty":4,"category":"طب","hint":"تعديل الجينات"},{"id":365,"word":"وباء","emojis":["🦠","💀","🌍","😷"],"difficulty":4,"category":"طب","hint":"انتشار مرض واسع"},{"id":366,"word":"التصوف","emojis":["🌹","💕","🌙","📿"],"difficulty":4,"category":"اسلام","hint":"طريق روحاني في الاسلام"},{"id":367,"word":"الفقه","emojis":["📖","⚖","🌙","🕌"],"difficulty":4,"category":"اسلام","hint":"علم احكام الاسلام"},{"id":368,"word":"البلاغة","emojis":["📜","✍","🌟","💬"],"difficulty":4,"category":"ادب","hint":"فن الكلام البليغ"},{"id":369,"word":"الصرف","emojis":["🔤","📚","💡","🌟"],"difficulty":4,"category":"لغة","hint":"علم بنية الكلمات العربية"},{"id":370,"word":"النحو","emojis":["📝","📚","💡","🌟"],"difficulty":4,"category":"لغة","hint":"علم قواعد اللغة"},{"id":371,"word":"المتنبي","emojis":["📜","🌙","🌟","✍"],"difficulty":4,"category":"ادب","hint":"اعظم شعراء العرب"},{"id":372,"word":"ابن رشد","emojis":["📚","🌟","🏛","💡"],"difficulty":4,"category":"تاريخ","hint":"فيلسوف عربي عظيم"},{"id":373,"word":"التضامن","emojis":["🤝","💪","❤","🌍"],"difficulty":4,"category":"مفاهيم","hint":"الوقوف مع بعضنا"},{"id":374,"word":"المساواة","emojis":["⚖","🌍","❤","🌟"],"difficulty":4,"category":"مفاهيم","hint":"حق الجميع في المساواة"},{"id":375,"word":"الوطنية","emojis":["❤","🌍","🗺","🌟"],"difficulty":4,"category":"مفاهيم","hint":"الحب للوطن"},{"id":376,"word":"الهوية الثقافية","emojis":["🌍","📚","❤","🌟"],"difficulty":4,"category":"مفاهيم","hint":"ما يميز الامة"},{"id":377,"word":"التنوع الثقافي","emojis":["🌍","🌈","🤝","🌟"],"difficulty":4,"category":"مفاهيم","hint":"تعدد الثقافات"},{"id":378,"word":"التعايش","emojis":["🌍","🤝","❤","🌟"],"difficulty":4,"category":"مفاهيم","hint":"العيش المشترك بسلام"},{"id":379,"word":"الشفافية","emojis":["💡","✅","🌍","🌟"],"difficulty":4,"category":"حوكمة","hint":"الوضوح وعدم الغموض"},{"id":380,"word":"المساءلة","emojis":["⚖","💡","🌍","✅"],"difficulty":4,"category":"حوكمة","hint":"المحاسبة على الاخطاء"},{"id":381,"word":"الحوكمة","emojis":["🏛","💡","🌍","📋"],"difficulty":4,"category":"حوكمة","hint":"نظام ادارة فعال"},{"id":382,"word":"النزاهة","emojis":["❤","💡","✅","🌟"],"difficulty":4,"category":"حوكمة","hint":"الامانة والاستقامة"},{"id":383,"word":"التنمية المستدامة","emojis":["🌍","🌿","💡","📈"],"difficulty":4,"category":"تنمية","hint":"تطوير لا يضر المستقبل"},{"id":384,"word":"التحول الرقمي","emojis":["💻","🔄","🌍","💡"],"difficulty":4,"category":"تقنية","hint":"انتقال للعالم الرقمي"},{"id":385,"word":"الامن الغذائي","emojis":["🌾","🌍","💡","❤"],"difficulty":4,"category":"تنمية","hint":"توفر الغذاء للجميع"},{"id":386,"word":"ريادة الاعمال","emojis":["💼","💡","🌟","📊"],"difficulty":4,"category":"ادارة","hint":"انشاء اعمال تجارية"},{"id":387,"word":"سلسلة الامداد","emojis":["📦","🔗","🌍","⚙"],"difficulty":4,"category":"ادارة","hint":"سلسلة الانتاج والتوزيع"},{"id":388,"word":"الذكاء العاطفي","emojis":["🧠","❤","💡","🌟"],"difficulty":4,"category":"نفس","hint":"فهم المشاعر وادارتها"},{"id":389,"word":"الصحة النفسية","emojis":["🧠","💊","🛋","💡"],"difficulty":4,"category":"نفس","hint":"سلامة العقل والنفس"},{"id":390,"word":"الصدمة النفسية","emojis":["💔","😢","🧠","🌑"],"difficulty":4,"category":"نفس","hint":"جرح نفسي عميق"},{"id":391,"word":"الوعي الذاتي","emojis":["🧠","💡","🌟","👁"],"difficulty":4,"category":"نفس","hint":"معرفة النفس"},{"id":392,"word":"الميكانيكا الكمومية","emojis":["⚛","🔬","💡","🌌"],"difficulty":5,"category":"علوم","hint":"فيزياء عالم الجسيمات"},{"id":393,"word":"النسبية الخاصة","emojis":["⚛","💫","⏰","🌌"],"difficulty":5,"category":"علوم","hint":"نظرية انشتاين الزمانية"},{"id":394,"word":"الانطولوجيا","emojis":["💭","🌌","📚","🌟"],"difficulty":5,"category":"فلسفة","hint":"علم الوجود والكينونة"},{"id":395,"word":"الابستمولوجيا","emojis":["🧠","💭","📚","🌟"],"difficulty":5,"category":"فلسفة","hint":"فلسفة المعرفة"},{"id":396,"word":"الظاهراتية","emojis":["💭","👁","📚","🌟"],"difficulty":5,"category":"فلسفة","hint":"دراسة الظواهر الشعورية"},{"id":397,"word":"الوجودية","emojis":["💭","🌍","📚","🌟"],"difficulty":5,"category":"فلسفة","hint":"فلسفة وجود الانسان"},{"id":398,"word":"الهيرمنيوطيقا","emojis":["📖","🔍","💭","🌟"],"difficulty":5,"category":"فلسفة","hint":"فن تفسير النصوص"},{"id":399,"word":"البراغماتية","emojis":["💡","✅","🌟","🔧"],"difficulty":5,"category":"فلسفة","hint":"الفلسفة العملية النفعية"},{"id":400,"word":"الديالكتيك","emojis":["💬","🤔","📚","🌟"],"difficulty":5,"category":"فلسفة","hint":"التفكير المتناقض"},{"id":401,"word":"الموشحات الاندلسية","emojis":["🎵","🌹","🌿","🌙"],"difficulty":5,"category":"فنون","hint":"شعر وموسيقى اندلسي"},{"id":402,"word":"الدادائية","emojis":["🎨","🌀","❓","🌟"],"difficulty":5,"category":"فنون","hint":"حركة فنية طليعية"},{"id":403,"word":"السريالية","emojis":["🌀","💭","🌟","✨"],"difficulty":5,"category":"فنون","hint":"فن تصوير اللاوعي"},{"id":404,"word":"التجريدية","emojis":["🎨","🌀","💭","🌟"],"difficulty":5,"category":"فنون","hint":"فن مجرد بلا شكل محدد"},{"id":405,"word":"ما بعد الحداثة","emojis":["🌐","📚","🌀","🌟"],"difficulty":5,"category":"فنون","hint":"تيار فكري معاصر"},{"id":406,"word":"الاكسيولوجيا","emojis":["❤","📚","💡","🌟"],"difficulty":5,"category":"فلسفة","hint":"فلسفة القيم"},{"id":407,"word":"المنطق الصوري","emojis":["💡","🧠","📚","🔢"],"difficulty":5,"category":"فلسفة","hint":"علم القياس العقلي"},{"id":408,"word":"الفلسفة الاسلامية","emojis":["📖","💭","🕌","🌟"],"difficulty":5,"category":"اسلام","hint":"الفكر الفلسفي الاسلامي"},{"id":409,"word":"علم الكلام","emojis":["📖","💭","🕌","🧠"],"difficulty":5,"category":"اسلام","hint":"علم عقائد الاسلام"},{"id":410,"word":"المقام الروحي","emojis":["🌙","💕","🕌","🌟"],"difficulty":5,"category":"اسلام","hint":"مراتب التصوف"},{"id":411,"word":"الكشف الروحي","emojis":["🌟","💡","🌙","✨"],"difficulty":5,"category":"اسلام","hint":"تجلي الحقيقة للصوفي"},{"id":412,"word":"حجر الاسود","emojis":["🕋","⚫","🌙","⭐"],"difficulty":5,"category":"اسلام","hint":"حجر مقدس في مكة"},{"id":413,"word":"مقام ابراهيم","emojis":["🕋","👣","🌙","⭐"],"difficulty":5,"category":"اسلام","hint":"اثر قدم نبي الله"},{"id":414,"word":"وقفة عرفة","emojis":["🕋","🙏","🌙","⭐"],"difficulty":5,"category":"اسلام","hint":"اعظم يوم في الحج"},{"id":415,"word":"رمي الجمرات","emojis":["🕋","🪨","🌙","⭐"],"difficulty":5,"category":"اسلام","hint":"شعيرة في الحج"},{"id":416,"word":"الطوبولوجيا","emojis":["🌐","🔢","📚","💡"],"difficulty":5,"category":"علوم","hint":"علم الفضاءات الرياضية"},{"id":417,"word":"نظرية المعلومات","emojis":["💾","📊","💡","🌐"],"difficulty":5,"category":"علوم","hint":"قياس المعلومات"},{"id":418,"word":"نظرية الاحتمالات","emojis":["🎲","🔢","💡","📊"],"difficulty":5,"category":"علوم","hint":"دراسة المصادفة"},{"id":419,"word":"الحساب التفاضلي","emojis":["📊","🔢","💡","📈"],"difficulty":5,"category":"علوم","hint":"حساب التغير والحركة"},{"id":420,"word":"البيولوجيا الجزيئية","emojis":["🧬","🔬","💡","🌿"],"difficulty":5,"category":"علوم","hint":"دراسة جزيئات الحياة"},{"id":421,"word":"الانثروبولوجيا","emojis":["🌍","👥","📜","💡"],"difficulty":5,"category":"علوم","hint":"دراسة الانسان وثقافاته"},{"id":422,"word":"علم الاثار","emojis":["⛏","🏛","📜","🌍"],"difficulty":5,"category":"علوم","hint":"دراسة اثار الحضارات"},{"id":423,"word":"علم الاعصاب","emojis":["🧠","🔬","💡","⚡"],"difficulty":5,"category":"علوم","hint":"دراسة الجهاز العصبي"},{"id":424,"word":"الجراحة العصبية","emojis":["🧠","🏥","💊","🔬"],"difficulty":5,"category":"طب","hint":"جراحة في الدماغ"},{"id":425,"word":"الطاقة النووية","emojis":["⚛","⚡","🌍","🔬"],"difficulty":5,"category":"تقنية","hint":"طاقة من نواة الذرة"},{"id":426,"word":"التكنولوجيا الحيوية","emojis":["🧬","💡","🔬","🌿"],"difficulty":5,"category":"تقنية","hint":"تطبيقات الاحياء في التقنية"},{"id":427,"word":"الروبوتيكس","emojis":["🤖","⚙","💪","🌐"],"difficulty":5,"category":"تقنية","hint":"علم الروبوتات"},{"id":428,"word":"الذكاء العام الاصطناعي","emojis":["🤖","🧠","💡","🌐"],"difficulty":5,"category":"تقنية","hint":"ذكاء اصطناعي كامل"},{"id":429,"word":"نظرية الالعاب","emojis":["♟","💡","📊","🌟"],"difficulty":5,"category":"علوم","hint":"تحليل القرارات الاستراتيجية"},{"id":430,"word":"الكوزمولوجيا","emojis":["🌌","⭐","💥","🚀"],"difficulty":5,"category":"فضاء","hint":"علم الكون واصله"},{"id":431,"word":"نظرية الاوتار","emojis":["⭐","⚛","💭","🔬"],"difficulty":5,"category":"فضاء","hint":"نظرية فيزياء موحدة"},{"id":432,"word":"الكواركات","emojis":["⚛","🔬","💡","🌌"],"difficulty":5,"category":"علوم","hint":"اجزاء البروتونات"},{"id":433,"word":"البوزون هيغز","emojis":["⚛","🔬","💥","🌌"],"difficulty":5,"category":"علوم","hint":"جسيم مانح الكتلة"},{"id":434,"word":"الحضارة الاسلامية","emojis":["🕌","📚","🌍","🌟"],"difficulty":5,"category":"تاريخ","hint":"اسهامات المسلمين الحضارية"},{"id":435,"word":"النهضة العربية","emojis":["📚","💡","🌍","🌟"],"difficulty":5,"category":"تاريخ","hint":"يقظة الفكر العربي"},{"id":436,"word":"الاصلاح الديني","emojis":["📖","💡","🕌","🌟"],"difficulty":5,"category":"اسلام","hint":"تجديد الفهم الديني"},{"id":437,"word":"العقد الاجتماعي","emojis":["📜","🤝","🌍","💡"],"difficulty":5,"category":"سياسة","hint":"اساس المجتمع السياسي"},{"id":438,"word":"السياسة الخارجية","emojis":["🌍","🤝","💼","🏛"],"difficulty":5,"category":"سياسة","hint":"علاقات دولة بالاخرين"},{"id":439,"word":"العلاقات الدولية","emojis":["🌍","🤝","💼","🕊"],"difficulty":5,"category":"سياسة","hint":"علاقات بين الدول"},{"id":440,"word":"النظام الدولي","emojis":["🌍","🏛","🤝","🌟"],"difficulty":5,"category":"سياسة","hint":"نظام العلاقات الدولية"},{"id":441,"word":"الايديولوجيا","emojis":["💭","🌍","📚","🌟"],"difficulty":5,"category":"سياسة","hint":"منظومة افكار سياسية"},{"id":442,"word":"الهيمنة الثقافية","emojis":["📚","🌍","💪","🌟"],"difficulty":5,"category":"ثقافة","hint":"سيطرة ثقافة على اخرى"},{"id":443,"word":"الضمان الاجتماعي","emojis":["🔒","❤","🌍","💡"],"difficulty":5,"category":"مجتمع","hint":"حماية المواطنين ضد المخاطر"},{"id":444,"word":"مؤشر التنمية البشرية","emojis":["👥","💡","🌍","📈"],"difficulty":5,"category":"تنمية","hint":"قياس مستوى التطور"},{"id":445,"word":"اهداف التنمية المستدامة","emojis":["🌍","💡","📈","🌟"],"difficulty":5,"category":"تنمية","hint":"خطة الامم المتحدة 2030"},{"id":446,"word":"التعقيد والفوضى","emojis":["🌀","💥","⚡","🌑"],"difficulty":5,"category":"علوم","hint":"انظمة غير خطية"},{"id":447,"word":"الانبثاق","emojis":["🌱","💡","🌟","⭐"],"difficulty":5,"category":"علوم","hint":"ظهور خصائص غير متوقعة"},{"id":448,"word":"نظام الانتروبيا","emojis":["🔥","🌌","💫","⚛"],"difficulty":5,"category":"علوم","hint":"ميل الانظمة للفوضى"},{"id":449,"word":"فيزياء البلازما","emojis":["⚛","🔥","⚡","🔬"],"difficulty":5,"category":"علوم","hint":"دراسة المادة الرابعة"},{"id":450,"word":"الثورة الصناعية الرابعة","emojis":["🤖","🏭","💡","🌐"],"difficulty":5,"category":"تقنية","hint":"ثورة التقنيات المتقدمة"},{"id":451,"word":"امن المعلومات","emojis":["💻","🔒","🛡","⚡"],"difficulty":5,"category":"تقنية","hint":"حماية البيانات الرقمية"},{"id":452,"word":"هجوم سيبراني","emojis":["💻","⚡","💀","🌐"],"difficulty":5,"category":"تقنية","hint":"اختراق الانظمة الرقمية"},{"id":453,"word":"الاتمتة الذكية","emojis":["🤖","⚙","🔄","🌐"],"difficulty":5,"category":"تقنية","hint":"التشغيل الالي الذكي"},{"id":454,"word":"الحوسبة الكمومية","emojis":["⚛","💻","💡","🌌"],"difficulty":5,"category":"تقنية","hint":"حاسوب على مستوى الكم"},{"id":455,"word":"الاقتصاد الرقمي","emojis":["💻","💰","🌍","📊"],"difficulty":5,"category":"اقتصاد","hint":"الاقتصاد القائم على البيانات"},{"id":456,"word":"التجارة الالكترونية","emojis":["💻","🛒","💰","🌐"],"difficulty":5,"category":"اقتصاد","hint":"التسوق عبر الانترنت"},{"id":457,"word":"الادارة الاستراتيجية","emojis":["💼","🗺","💡","🌟"],"difficulty":5,"category":"ادارة","hint":"الادارة بمنظور بعيد"},{"id":458,"word":"قيادة التغيير","emojis":["💪","🔄","💡","🌟"],"difficulty":5,"category":"ادارة","hint":"قيادة التحولات المؤسسية"},{"id":459,"word":"ثقافة الابتكار","emojis":["🎨","💡","🌟","🚀"],"difficulty":5,"category":"ادارة","hint":"بيئة عمل تشجع الابداع"},{"id":460,"word":"التعليم المستمر","emojis":["📚","🔄","💡","🌟"],"difficulty":5,"category":"تعليم","hint":"التعلم مدى الحياة"},{"id":461,"word":"التعلم الذاتي","emojis":["📚","💡","🌟","🔍"],"difficulty":5,"category":"تعليم","hint":"التعلم بالاعتماد على النفس"},{"id":462,"word":"المهارات الرقمية","emojis":["💻","💡","🌟","📊"],"difficulty":5,"category":"تعليم","hint":"مهارات العصر الرقمي"},{"id":463,"word":"التفكير النقدي","emojis":["🤔","💡","📚","🌟"],"difficulty":5,"category":"تعليم","hint":"التحليل الموضوعي للافكار"},{"id":464,"word":"حل المشكلات","emojis":["🔍","💡","✅","🌟"],"difficulty":5,"category":"تعليم","hint":"ايجاد حلول للتحديات"},{"id":465,"word":"التواصل الفعال","emojis":["💬","🤝","💡","🌟"],"difficulty":5,"category":"مهارات","hint":"مهارة التعبير والاصغاء"},{"id":466,"word":"العمل الجماعي","emojis":["🤝","👥","💪","🌟"],"difficulty":5,"category":"مهارات","hint":"التعاون لتحقيق هدف"},{"id":467,"word":"القيادة الذاتية","emojis":["💪","💡","🌟","🎯"],"difficulty":5,"category":"مهارات","hint":"ادارة النفس وتطويرها"},{"id":468,"word":"ادارة الوقت","emojis":["⏰","💡","✅","🌟"],"difficulty":5,"category":"مهارات","hint":"استثمار الوقت بكفاءة"},{"id":469,"word":"الذكاء الاجتماعي","emojis":["👥","🧠","💡","🌟"],"difficulty":5,"category":"مهارات","hint":"فهم الاخرين والتفاعل معهم"},{"id":470,"word":"مهارات القرن الحادي والعشرين","emojis":["💡","🌐","🚀","🌟"],"difficulty":5,"category":"تعليم","hint":"كفاءات العصر الحديث"},{"id":471,"word":"رؤية 2030","emojis":["🇸🇦","🌟","💡","🚀"],"difficulty":5,"category":"تنمية","hint":"مستقبل المملكة العربية السعودية"},{"id":472,"word":"النجاح والتفوق","emojis":["🏆","🌟","💪","❤"],"difficulty":5,"category":"عام","hint":"تحقيق اهدافك باصرار وعزم"}];
+
+const ARABIC_POOL = 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي'.split('');
+const DIFF_COLORS = {1:'#4CAF50',2:'#2196F3',3:'#FF9800',4:'#F44336',5:'#9C27B0'};
+const DIFF_LABELS = {1:'سهل',2:'متوسط',3:'صعب',4:'صعب جداً',5:'خبير'};
+const CHAPTERS = [
+  {id:1,label:'الفصل الأول',icon:'🌱',range:[1,100]},
+  {id:2,label:'الفصل الثاني',icon:'🌿',range:[101,200]},
+  {id:3,label:'الفصل الثالث',icon:'🌳',range:[201,320]},
+  {id:4,label:'الفصل الرابع',icon:'🏆',range:[321,400]},
+  {id:5,label:'الفصل الخامس',icon:'👑',range:[401,472]},
+];
+const CATS = ['حيوانات 🐾','فواكه 🍎','طعام 🍕','مهن 👷','دول 🌍','علوم 🔬','إسلام 🕌','تقنية 💻'];
+
+// ===== STATE =====
+let S = {
+  currentLevel:1, completedLevels:[], coins:100, lives:5, maxLives:5,
+  streak:0, longestStreak:0, lastPlayedDate:null, totalStars:0,
+  hintsUsed:0, settings:{sound:true,haptics:true}
+};
+let currentChapter = 1;
+let G = {}; // game session
+
+// ===== STORAGE =====
+function saveState(){try{localStorage.setItem('SWGAME',JSON.stringify(S));}catch(e){}}
+function loadState(){try{const d=localStorage.getItem('SWGAME');if(d)S={...S,...JSON.parse(d)};}catch(e){}}
+
+// ===== INIT =====
+loadState();
+updateHomeUI();
+buildCats();
+buildChapterTabs();
+buildLevelsGrid();
+
+function buildCats(){
+  const el=document.getElementById('cats');
+  el.innerHTML=CATS.map(c=>`<span class="cat-chip">${c}</span>`).join('');
+}
+
+function updateHomeUI(){
+  const total=LEVELS.length;
+  const done=S.completedLevels.length;
+  const pct=Math.round((done/total)*100);
+  document.getElementById('h-coins').textContent=fmt(S.coins);
+  document.getElementById('h-lives').textContent=`${S.lives}/${S.maxLives}`;
+  document.getElementById('h-streak').textContent=S.streak;
+  document.getElementById('h-stars').textContent=fmt(S.totalStars);
+  document.getElementById('h-pct').textContent=pct+'%';
+  document.getElementById('h-bar').style.width=pct+'%';
+  document.getElementById('h-sub').textContent=`${done} / ${total} مستوى مكتمل`;
+  document.getElementById('h-lvl-lbl').textContent='المستوى '+S.currentLevel;
+}
+
+function updateSettingsUI(){
+  document.getElementById('s-completed').textContent=S.completedLevels.length;
+  document.getElementById('s-stars').textContent=S.totalStars;
+  document.getElementById('s-coins').textContent=S.coins;
+  document.getElementById('s-streak').textContent=S.longestStreak+' يوم';
+  document.getElementById('s-hints').textContent=S.hintsUsed;
+  document.getElementById('sound-toggle').className='toggle-btn '+(S.settings.sound?'on':'off');
+  document.getElementById('haptic-toggle').className='toggle-btn '+(S.settings.haptics?'on':'off');
+}
+
+function fmt(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);}
+
+// ===== SCREENS =====
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='home') updateHomeUI();
+  if(id==='settings') updateSettingsUI();
+  if(id==='levelmap'){buildLevelsGrid();buildChapterTabs();}
+  window.scrollTo(0,0);
+}
+
+// ===== CHAPTER TABS =====
+function buildChapterTabs(){
+  const el=document.getElementById('chapter-tabs');
+  el.innerHTML=CHAPTERS.map(c=>`
+    <button class="chapter-tab ${currentChapter===c.id?'active':''}" onclick="setChapter(${c.id})">
+      <span>${c.icon}</span><span>${c.id}</span>
+    </button>`).join('');
+}
+function setChapter(id){
+  currentChapter=id;
+  buildChapterTabs();
+  buildLevelsGrid();
+}
+
+// ===== LEVEL MAP =====
+function buildLevelsGrid(){
+  const ch=CHAPTERS[currentChapter-1];
+  const levels=LEVELS.filter(l=>l.id>=ch.range[0]&&l.id<=ch.range[1]);
+  const done=levels.filter(l=>S.completedLevels.includes(l.id)).length;
+  const pct=Math.round((done/levels.length)*100);
+  document.getElementById('ch-label').textContent=`${ch.icon} ${ch.label} — المستويات ${ch.range[0]}–${ch.range[1]}`;
+  document.getElementById('ch-prog').style.width=pct+'%';
+  const grid=document.getElementById('levels-grid');
+  grid.innerHTML=levels.map(l=>{
+    const unlocked=isUnlocked(l.id);
+    const completed=S.completedLevels.includes(l.id);
+    const isCurrent=l.id===S.currentLevel;
+    const color=DIFF_COLORS[l.difficulty];
+    let cls='lvl-cell';
+    if(completed)cls+=' done';
+    if(isCurrent)cls+=' current';
+    if(!unlocked)cls+=' locked';
+    const border=unlocked?`border-color:${color}`:'' ;
+    const inner=completed?'✓':(!unlocked?'🔒':l.id);
+    const dot=isCurrent?'<div class="dot"></div>':'';
+    const click=unlocked?`onclick="loadGame(${l.id})"`:'' ;
+    return `<div class="${cls}" style="${border}" ${click}>${inner}${dot}</div>`;
+  }).join('');
+}
+
+function isUnlocked(id){return id===1||S.completedLevels.includes(id-1);}
+
+// ===== GAME LOGIC =====
+function startCurrentLevel(){loadGame(S.currentLevel);}
+
+function loadGame(levelId){
+  const level=LEVELS.find(l=>l.id===levelId);
+  if(!level)return;
+  G={
+    level, userInput:[], usedIndices:[], keyboard:[],
+    revealedIndices:[], hintsUsed:0, livesLost:0
+  };
+  G.keyboard=genKeyboard(level.word);
+  showScreen('game');
+  renderGame();
+}
+
+function genKeyboard(word){
+  const letters=word.split('');
+  const used=new Set(letters);
+  const extras=ARABIC_POOL.filter(l=>!used.has(l)).sort(()=>Math.random()-0.5);
+  const total=Math.max(12,letters.length+6);
+  const all=[...letters,...extras.slice(0,total-letters.length)];
+  return all.sort(()=>Math.random()-0.5);
+}
+
+function normalize(s){return s.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');}
+function checkAns(inp,word){return normalize(inp)===normalize(word);}
+function coinsForLevel(d){return d*10+10;}
+function starsForLevel(hints,lives){if(hints===0&&lives===0)return 3;if(hints<=1&&lives<=1)return 2;return 1;}
+
+function renderGame(){
+  const {level,userInput,keyboard,usedIndices,revealedIndices}=G;
+  const wordArr=level.word.split('');
+  const color=DIFF_COLORS[level.difficulty];
+
+  document.getElementById('g-level-num').textContent='المستوى '+level.id;
+  const badge=document.getElementById('g-diff-badge');
+  badge.textContent=level.category;
+  badge.style.background=color;
+
+  document.getElementById('g-coins').textContent='🪙 '+S.coins;
+
+  // lives
+  const livesEl=document.getElementById('g-lives');
+  livesEl.innerHTML=Array.from({length:S.maxLives}).map((_,i)=>
+    `<span>${i<S.lives?'❤️':'🖤'}</span>`).join('');
+
+  // emojis
+  const emEl=document.getElementById('g-emojis');
+  emEl.innerHTML=level.emojis.map(e=>`<div class="emoji-card">${e}</div>`).join('');
+
+  // answer boxes
+  const ansEl=document.getElementById('g-answer');
+  ansEl.innerHTML=wordArr.map((_,i)=>{
+    const filled=userInput[i];
+    const isRev=filled&&revealedIndices.includes(filled.keyIndex);
+    let cls='ans-box';
+    if(filled)cls+=' filled';
+    if(isRev)cls+=' revealed';
+    return `<div class="${cls}">${filled?filled.letter:''}</div>`;
+  }).join('');
+
+  // hint
+  document.getElementById('g-hint').textContent='💡 '+level.hint;
+
+  // keyboard
+  const kbEl=document.getElementById('g-keyboard');
+  const half=Math.ceil(keyboard.length/2);
+  const row1=keyboard.slice(0,half);
+  const row2=keyboard.slice(half);
+  const renderKey=(letter,i,disabled)=>{
+    const used=usedIndices.includes(i);
+    const wrong=letter==='❌';
+    let cls='key-tile';
+    if(used)cls+=' used';
+    if(wrong)cls+=' wrong-letter';
+    return `<button class="${cls}" ${used||wrong?'disabled':''} onclick="pressKey('${letter}',${i})" style="${!used&&!wrong?'cursor:pointer':''}">${wrong?'':letter}</button>`;
+  };
+  kbEl.innerHTML=`
+    <div class="key-row">${row1.map((l,i)=>renderKey(l,i)).join('')}</div>
+    <div class="key-row">${row2.map((l,ii)=>renderKey(l,ii+half)).join('')}<button class="backspace-tile" onclick="pressBackspace()">⌫</button></div>`;
+}
+
+function pressKey(letter,index){
+  if(G.usedIndices.includes(index)||letter==='❌')return;
+  if(G.userInput.length>=G.level.word.length)return;
+  G.userInput.push({letter,keyIndex:index});
+  G.usedIndices.push(index);
+  renderGame();
+  if(G.userInput.length===G.level.word.length){
+    const ans=G.userInput.map(x=>x.letter).join('');
+    if(checkAns(ans,G.level.word)){
+      setTimeout(()=>showWin(),300);
+    } else {
+      const row=document.getElementById('g-answer');
+      row.classList.add('shake');
+      setTimeout(()=>row.classList.remove('shake'),500);
+      setTimeout(()=>{
+        G.userInput=[];G.usedIndices=[];
+        if(S.lives>0){S.lives--;G.livesLost++;saveState();}
+        if(S.lives===0){renderGame();setTimeout(()=>showFail(),400);}
+        else renderGame();
+      },600);
+    }
+  }
+}
+
+function pressBackspace(){
+  if(G.userInput.length===0)return;
+  const last=G.userInput[G.userInput.length-1];
+  if(G.revealedIndices.includes(last.keyIndex))return;
+  G.userInput.pop();
+  G.usedIndices=G.usedIndices.filter(i=>i!==last.keyIndex);
+  renderGame();
+}
+
+function showWin(){
+  const coins=coinsForLevel(G.level.difficulty);
+  const stars=starsForLevel(G.hintsUsed,G.livesLost);
+  const already=S.completedLevels.includes(G.level.id);
+  if(!already){
+    S.completedLevels.push(G.level.id);
+    S.coins+=coins;
+    S.totalStars+=stars;
+    const today=new Date().toDateString();
+    S.streak=S.lastPlayedDate===today?S.streak:S.streak+1;
+    S.longestStreak=Math.max(S.longestStreak,S.streak);
+    S.lastPlayedDate=today;
+  }
+  S.currentLevel=Math.max(S.currentLevel,G.level.id+1);
+  saveState();
+  document.getElementById('win-word').textContent=G.level.word;
+  document.getElementById('win-coins').textContent=already?'تم حل هذا المستوى سابقاً':'🪙 +'+coins+' عملة';
+  const sr=document.getElementById('win-stars');
+  sr.innerHTML=Array.from({length:3}).map((_,i)=>`<span class="${i<stars?'':'star-empty'}">⭐</span>`).join('');
+  const nb=document.getElementById('next-btn-txt');
+  nb.textContent=G.level.id<LEVELS.length?'المستوى التالي ←':'🏆 أكملت جميع المستويات!';
+  document.getElementById('win-modal').style.display='flex';
+}
+
+function showFail(){
+  document.getElementById('fail-modal').style.display='flex';
+}
+
+function goNextLevel(){
+  closeModal('win-modal');
+  const next=G.level.id+1;
+  if(next<=LEVELS.length) loadGame(next);
+  else showScreen('home');
+}
+
+function closeModal(id){document.getElementById(id).style.display='none';}
+
+// ===== HINTS =====
+function openHintMenu(){document.getElementById('hint-modal').style.display='flex';}
+function closeHintMenu(e){
+  if(!e||e.target.id==='hint-modal')document.getElementById('hint-modal').style.display='none';
+}
+
+function useHint(type){
+  const costs={letter:50,remove:75,word:150};
+  const cost=costs[type];
+  if(S.coins<cost){alert('عملات غير كافية! تحتاج '+cost+' عملة');return;}
+  S.coins-=cost;S.hintsUsed++;G.hintsUsed++;saveState();
+  document.getElementById('hint-modal').style.display='none';
+  if(type==='letter'){
+    const wordArr=G.level.word.split('');
+    const unrev=wordArr.map((_,i)=>i).filter(i=>!G.revealedIndices.some(ri=>{
+      const inp=G.userInput[i];return inp&&G.revealedIndices.includes(inp.keyIndex);
+    }));
+    const wrongPos=wordArr.map((_,i)=>i).filter(i=>!G.userInput[i]||G.userInput[i].letter!==wordArr[i]);
+    const pos=wrongPos[0];
+    if(pos===undefined){renderGame();return;}
+    const letter=wordArr[pos];
+    const kbIdx=G.keyboard.findIndex((l,i)=>l===letter&&!G.usedIndices.includes(i));
+    if(kbIdx===-1){renderGame();return;}
+    while(G.userInput.length<pos)G.userInput.push(null);
+    if(G.userInput.length===pos)G.userInput.push({letter,keyIndex:kbIdx});
+    else G.userInput[pos]={letter,keyIndex:kbIdx};
+    const clean=G.userInput.filter(Boolean);
+    G.userInput=clean.slice(0,pos+1);
+    G.usedIndices.push(kbIdx);
+    G.revealedIndices.push(kbIdx);
+  } else if(type==='remove'){
+    const wordLetters=new Set(G.level.word.split(''));
+    G.keyboard=G.keyboard.map(l=>wordLetters.has(l)?l:'❌');
+  } else if(type==='word'){
+    setTimeout(()=>showWin(),300);return;
+  }
+  renderGame();
+}
+
+// ===== SETTINGS =====
+function toggleSetting(key){
+  S.settings[key]=!S.settings[key];
+  saveState();updateSettingsUI();
+}
+
+function resetGame(){
+  if(!confirm('هل أنت متأكد؟ سيتم حذف كل تقدمك!'))return;
+  localStorage.removeItem('SWGAME');
+  S={currentLevel:1,completedLevels:[],coins:100,lives:5,maxLives:5,streak:0,longestStreak:0,lastPlayedDate:null,totalStars:0,hintsUsed:0,settings:{sound:true,haptics:true}};
+  saveState();showScreen('home');
+}
+
+// ===== LIVES REGEN =====
+setInterval(()=>{
+  if(S.lives<S.maxLives){S.lives++;saveState();if(document.getElementById('game').classList.contains('active'))renderGame();}
+},30*60*1000);
+</script>
+</body>
+</html>
